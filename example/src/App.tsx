@@ -1,4 +1,4 @@
-import { Suspense, useState } from 'react'
+import { Suspense, useState, useMemo } from 'react'
 import { Object3D, Vector3, TextureLoader } from "three";
 import { Canvas, useLoader } from '@react-three/fiber'
 import { Stats, OrbitControls, PerspectiveCamera } from "@react-three/drei";
@@ -10,14 +10,7 @@ import GpuCheck from './GpuCheck'
 Object3D.DefaultUp.set(0, 0, 1);
 
 
-
-const domains = {
-    x: [0, 100],
-    y: [0, 250],
-    z: [100, 200]
-}
-
-const SurfaceContainer = ({scale, ticks}: {scale: Vector3, ticks: number}) => {
+const SurfaceContainer = ({scale, ticks, domains}: any) => {
 
     const [map, depth] = useLoader(TextureLoader, ['./sinc.png', './sinc_gray.png'] )
 
@@ -30,11 +23,19 @@ const SurfaceContainer = ({scale, ticks}: {scale: Vector3, ticks: number}) => {
 const App = () => {
 
     const [scale, set] = useState(new Vector3(1, 1, 0.2 ))
+    const [x, setX] = useState(100.)
     const [ticks, setT] = useState(15)
+
+    const domains = useMemo( () => ({
+        x: [0, x],
+        y: [0, 250],
+        z: [100, 200]
+    }), [x])
 
     return <div className='canvas'>
         <Control 
             z={scale.z} setZ={(z: number) => set( v => new Vector3(v.x, v.y, z))}
+            x={x} setX={setX}
             t={ticks} setT={setT}
         />
         <Canvas frameloop="demand" linear flat >
@@ -42,7 +43,7 @@ const App = () => {
             <pointLight intensity={0.5} position={[0.5, 0.5, 2]} />
             <pointLight intensity={0.5} position={[-0.5, -0.5, 2]} />
             <Suspense fallback={null}>
-                <SurfaceContainer scale={scale} ticks={ticks} />
+                <SurfaceContainer scale={scale} ticks={ticks} domains={domains} />
             </Suspense>
             <PerspectiveCamera
                 position={ [-0.5, -1.0, 1.5] }
