@@ -57,9 +57,9 @@
     "dist"
   ],
   "dependencies": {
-    "@react-three/drei": "^7.26.1",
     "@react-three/fiber": "^7.0.21",
     "d3-scale": "^4.0.2",
-    "three": "^0.135.0"
+    "three": "^0.135.0",
+    "troika-three-text": "^0.44.0"
   }
 }

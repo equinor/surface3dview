@@ -1,10 +1,31 @@
 import React, { useEffect, useState } from 'react'
-import { Vector3 } from 'three'
+import { Vector3, BufferGeometry } from 'three'
 import { useThree, useFrame } from '@react-three/fiber'
 import { scaleLinear } from 'd3-scale'
 
-import { Text, Line } from "@react-three/drei";
+import { Text } from "./Text";
 
+/*
+ * Typescript error on line element (both defined in three and svg)
+ */
+
+import { Line } from 'three'
+import { ReactThreeFiber, extend } from '@react-three/fiber'
+
+extend({ Line_: Line })
+
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      line_: ReactThreeFiber.Object3DNode<THREE.Line, typeof Line>
+    }
+  }
+}
+
+
+/*
+ * Const
+ */
 
 const ORIGIN = new Vector3(0, 0, 0)
 const ONES = new Vector3(1, 1, 1)
@@ -12,6 +33,9 @@ const X = new Vector3(1, 0, 0)
 const Y = new Vector3(0, 1, 0)
 const Z = new Vector3(0, 0, 1)
 const FADE_FACTOR = 0.001
+const GRIDOffsetFactor = 10
+const GRIDOffsetUnits = 1
+
 
 interface IGridLines { 
     scale: Vector3,
@@ -171,37 +195,36 @@ interface ILines {
 
 const Lines = ({position, setPosition, v1, v2, scale, v1_ticks, v2_ticks, style}: ILines) => {
 
-    const [lineGeometrys, set] = useState<Vector3[][]>([])
-    const [endGeometrys, setEnds] = useState<Vector3[][]>([])
+    const [lineGeometrys, set] = useState<BufferGeometry[]>([])
+    const [endGeometrys, setEnds] = useState<BufferGeometry[]>([])
     const [normal, ] = useState(new Vector3().crossVectors(v1, v2).normalize())
-
-    const { camera } = useThree()
 
     // build geometry
     useEffect(() => {
-        const geos: Vector3[][] = []
+        const geos: BufferGeometry[] = []
 
         v1_ticks.forEach( x => {
             const p = v1.clone().multiplyScalar(x)
-            geos.push( [p, p.clone().add(v2)] )
+            geos.push( new BufferGeometry().setFromPoints( [p, p.clone().add(v2)] ) )
         })
     
         v2_ticks.forEach( x => {
             const p = v2.clone().multiplyScalar(x)
-            geos.push( [p, p.clone().add(v1)] )
+            geos.push( new BufferGeometry().setFromPoints( [p, p.clone().add(v1)] ) )
         })
         set( geos )
 
-        const endGeos = []
-        endGeos.push( [ORIGIN, v1] )
-        endGeos.push( [v1, v2.clone().add(v1)] )
-        endGeos.push( [ORIGIN, v2] )
-        endGeos.push( [v2, v1.clone().add(v2)] )
+        const endGeos: BufferGeometry[] = []
+        endGeos.push( new BufferGeometry().setFromPoints( [ORIGIN, v1] ) )
+        endGeos.push( new BufferGeometry().setFromPoints( [v1, v2.clone().add(v1)] ) )
+        endGeos.push( new BufferGeometry().setFromPoints( [ORIGIN, v2] ) )
+        endGeos.push( new BufferGeometry().setFromPoints( [v2, v1.clone().add(v2)] ) )
         setEnds( endGeos )
 
     }, [v1, v2, v1_ticks, v2_ticks])
 
     // check if plane needs to move
+    const { camera } = useThree()
     useFrame(() => {
 
         let _normal = normal.clone()
@@ -227,27 +250,22 @@ const Lines = ({position, setPosition, v1, v2, scale, v1_ticks, v2_ticks, style}
 
     return (
         <group position={p}>
-            { lineGeometrys.map( (points, i) => 
-                <Line
-                    key={i} 
-                    points={points}
-                    color={style?.color || 'black'} 
-                    linewidth={1} 
-                    opacity={opacity * 0.5}
-
-                    polygonOffset
-                    polygonOffsetFactor={5}
-                />
+            { lineGeometrys.map( lineGeometry => 
+                <line_ key={lineGeometry.uuid} geometry={lineGeometry}>
+                    <meshBasicMaterial attach="material" 
+                        color={style?.color || 'black'} opacity={opacity * 0.5} 
+                        polygonOffset polygonOffsetFactor={GRIDOffsetFactor} polygonOffsetUnits={GRIDOffsetUnits}
+                    />
+                </line_>
             ) }
 
-            { endGeometrys.map( (points, i) => 
-                <Line 
-                    key={i} 
-                    points={points}
-                    color={'black'} 
-                    linewidth={1.5} 
-                    opacity={opacity}
-                />
+            { endGeometrys.map( lineGeometry => 
+                <line_ key={lineGeometry.uuid} geometry={lineGeometry}>
+                    <meshBasicMaterial attach="material" 
+                        color={style?.color || 'black'} opacity={opacity} 
+                        polygonOffset polygonOffsetFactor={GRIDOffsetFactor} polygonOffsetUnits={GRIDOffsetUnits}
+                    />
+                </line_>
             ) }
 
         </group>

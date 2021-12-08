@@ -1595,13 +1595,27 @@
   resolved "https://npm.equinor.com/@react-spring%2ftypes/-/types-9.3.1.tgz#20f392ecad15a1ea6c0865ffe86ca5016c05a278"
   integrity sha512-W/YMJMX35XgGGzX0gKORBTwnvQ+1loDOFN3XlZkW5fgpEY+7VkRUpPyqPWXQr3n6lHrsLmHIGdpznqZi54ACTQ==
 
-"@react-three/drei@^7.26.1":
-  version "0.0.0"
-  uid ""
-
-"@react-three/drei@link:../node_modules/@react-three/drei":
-  version "0.0.0"
-  uid ""
+"@react-three/drei@^7.27.0":
+  version "7.27.0"
+  resolved "https://npm.equinor.com/@react-three%2fdrei/-/drei-7.27.0.tgz#abb29fcef1ba61450cc6c174d43684d724da70d0"
+  integrity sha512-yxIoaDWhNEcFZiUolFWZNw7kkEJg0d1TAUFGwGMrtVaa0oUU79A+nE4wKhYqyl++ow06A4JPQ5CCy2sT7qnpiw==
+  dependencies:
+    "@babel/runtime" "^7.11.2"
+    "@react-spring/three" "^9.3.1"
+    "@use-gesture/react" "^10.2.0"
+    detect-gpu "^3.1.28"
+    glsl-noise "^0.0.0"
+    lodash.omit "^4.5.0"
+    lodash.pick "^4.4.0"
+    react-composer "^5.0.2"
+    react-merge-refs "^1.1.0"
+    stats.js "^0.17.0"
+    three-mesh-bvh "^0.5.2"
+    three-stdlib "^2.6.1"
+    troika-three-text "^0.44.0"
+    use-asset "^1.0.4"
+    utility-types "^3.10.0"
+    zustand "^3.5.13"
 
 "@react-three/fiber@^7.0.21":
   version "0.0.0"
