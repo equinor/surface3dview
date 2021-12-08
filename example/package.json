@@ -21,6 +21,9 @@
     "react-dom": "link:../node_modules/react-dom",
     "react-scripts": "link:../node_modules/react-scripts",
     "typescript": "link:../node_modules/typescript",
+    "@react-three/drei": "link:../node_modules/@react-three/drei",
+    "@react-three/fiber": "link:../node_modules/@react-three/fiber",
+    "three": "link:../node_modules/three",
     "surface-3d-viewer": "link:.."
   },
   "devDependencies": {
