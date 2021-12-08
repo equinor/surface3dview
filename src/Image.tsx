@@ -1,9 +1,9 @@
 import { DoubleSide } from "three";
-import { DataTexture, Vector3 } from 'three'
+import { DataTexture, Texture, Vector3 } from 'three'
 
 interface IProps {
-    map: DataTexture
-    depth: DataTexture
+    map: DataTexture | Texture
+    depth: DataTexture | Texture
     scale: Vector3
 }
 
@@ -48,7 +48,7 @@ export default Image
 
 
 
-function setUpShader(shader: any, textureDepth: DataTexture) {
+function setUpShader(shader: any, textureDepth: DataTexture | Texture) {
 
     // uniforms
     shader.uniforms.displacementMap   = { type: "t", value: textureDepth };
