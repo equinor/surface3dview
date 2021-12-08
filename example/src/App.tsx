@@ -19,11 +19,11 @@ const domains = {
 
 const Surface = ({scale}: {scale: Vector3}) => {
 
-    const map = useLoader(TextureLoader, './sinc.png')
+    const [map, depth] = useLoader(TextureLoader, ['./sinc.png', './sinc_gray.png'] )
 
     return <Suspense fallback={null}>
         <Grid scale={scale} domains={domains} />
-        <Image map={map as any} depth={map as any} scale={scale} />
+        <Image map={map} depth={depth} scale={scale} />
     </Suspense>
 }
 
@@ -31,7 +31,7 @@ const App = () => {
 
     const [scale, set] = useState(new Vector3(1, 1, 0.2 ))
 
-    return <div style={{height: 750, width: 750, border: '1px solid', margin: 'auto'}}>
+    return <div className='canvas'>
         <Control 
             z={scale.z}
             setZ={(z: number) => set( v => new Vector3(v.x, v.y, z))}

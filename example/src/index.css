@@ -12,3 +12,19 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+div.canvas {
+  height: 750px;
+  width: 750px;
+  border: 1px solid;
+  margin: auto;
+}
+
+div.controller {
+    position: absolute;
+    z-index: 50;
+    padding: 8px;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+    border-radius: 16px 0px;
+}
