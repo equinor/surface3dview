@@ -8,14 +8,14 @@ interface IProps {
 }
 
 /**
- * Image 
+ * Surface 
  *
  * Map ~ surface texture
  * Depth ~ bump scale texture (gray scale)
  * Scale ~ vector of how to scale the surface
  * 
  */
-const Image = ({map, depth, scale} : IProps) => {
+const Surface = ({map, depth, scale} : IProps) => {
 
     return (
         <mesh
@@ -43,7 +43,7 @@ const Image = ({map, depth, scale} : IProps) => {
     )
 }
 
-export default Image
+export default Surface
 
 
 

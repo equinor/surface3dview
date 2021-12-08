@@ -1,7 +1,13 @@
-import { ExampleComponent } from '.'
+import { Grid, Surface } from '.'
 
-describe('ExampleComponent', () => {
+describe('Grid', () => {
   it('is truthy', () => {
-    expect(ExampleComponent).toBeTruthy()
+    expect(Grid).toBeTruthy()
+  })
+})
+
+describe('Surface', () => {
+  it('is truthy', () => {
+    expect(Surface).toBeTruthy()
   })
 })

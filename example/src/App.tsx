@@ -2,7 +2,7 @@ import { Suspense, useState } from 'react'
 import { Object3D, Vector3, TextureLoader } from "three";
 import { Canvas, useLoader } from '@react-three/fiber'
 import { Stats, OrbitControls, PerspectiveCamera } from "@react-three/drei";
-import { Grid, Image } from 'surface-3d-viewer'
+import { Grid, Surface } from 'surface-3d-viewer'
 
 import Control from './Control'
 import GpuCheck from './GpuCheck'
@@ -17,13 +17,13 @@ const domains = {
     z: [100, 200]
 }
 
-const Surface = ({scale}: {scale: Vector3}) => {
+const SurfaceContainer = ({scale}: {scale: Vector3}) => {
 
     const [map, depth] = useLoader(TextureLoader, ['./sinc.png', './sinc_gray.png'] )
 
     return <Suspense fallback={null}>
         <Grid scale={scale} domains={domains} />
-        <Image map={map} depth={depth} scale={scale} />
+        <Surface map={map} depth={depth} scale={scale} />
     </Suspense>
 }
 
@@ -41,7 +41,7 @@ const App = () => {
             <pointLight intensity={0.5} position={[0.5, 0.5, 2]} />
             <pointLight intensity={0.5} position={[-0.5, -0.5, 2]} />
             <Suspense fallback={null}>
-                <Surface scale={scale} />
+                <SurfaceContainer scale={scale} />
             </Suspense>
             <PerspectiveCamera
                 position={ [-0.5, -1.0, 1.5] }

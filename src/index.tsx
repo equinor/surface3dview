@@ -1,2 +1,2 @@
-export { default as Image } from './Image'
+export { default as Surface } from './Surface'
 export { default as Grid } from './Grid'
