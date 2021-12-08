@@ -13,7 +13,6 @@ interface IProps {
  * Map ~ surface texture
  * Depth ~ bump scale texture (gray scale)
  * Scale ~ vector of how to scale the surface
- * 
  */
 const Surface = ({map, depth, scale} : IProps) => {
 

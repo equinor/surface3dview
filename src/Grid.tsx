@@ -22,6 +22,14 @@ interface IGridLines {
     tickStyle?: { strokeColor: React.CSSProperties['color'], outlineColor: React.CSSProperties['color'] }
 }
 
+/**
+ * Grid 
+ *
+ * domains ~ sets min/max on axis
+ * ticks ~ ideal number of ticks (not neccessary what you get)
+ * Scale ~ vector of how to scale the grid
+ * Xstyle ~ override default coloring on lines and labels
+ */
 const GridPlanes = ({scale, domains, ticks: TICKS = 15, ...props}: IGridLines) => {
 
     const [pXY, setXY] = useState(ORIGIN)
