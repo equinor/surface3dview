@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Vector3 } from 'three'
-import { Text, Line } from "@react-three/drei";
-
 import { useThree, useFrame } from '@react-three/fiber'
 import { scaleLinear } from 'd3-scale'
 
+import { Text, Line } from "@react-three/drei";
 
-const TICKS = 15
+
 const ORIGIN = new Vector3(0, 0, 0)
 const ONES = new Vector3(1, 1, 1)
 const X = new Vector3(1, 0, 0)
@@ -16,13 +15,14 @@ const FADE_FACTOR = 0.001
 
 interface IGridLines { 
     scale: Vector3,
-    domains: { [xyz: string]: [number, number] | number[] }
+    domains: { [xyz in 'x' | 'y' | 'z']: [number, number] | number[] }
 
+    ticks?: number
     lineStyle?: { color: React.CSSProperties['color'] }
     tickStyle?: { strokeColor: React.CSSProperties['color'], outlineColor: React.CSSProperties['color'] }
 }
 
-const GridPlanes = ({scale, domains, ...props}: IGridLines) => {
+const GridPlanes = ({scale, domains, ticks: TICKS = 15, ...props}: IGridLines) => {
 
     const [pXY, setXY] = useState(ORIGIN)
     const [pYZ, setYZ] = useState(ORIGIN)
@@ -47,20 +47,20 @@ const GridPlanes = ({scale, domains, ...props}: IGridLines) => {
         const ticks = scale.ticks(TICKS * ONES.dot(sX)).slice(1)
         if ( ticks[ticks.length - 1] / domains.x[1] > 0.975 ) ticks.pop()
         setTickX( { ticks, values: ticks.map(scale) } )
-    }, [domains.x, sX])
+    }, [domains.x, sX, TICKS])
 
     useEffect(() => {
         const scale = scaleLinear().domain(domains.y)
         const ticks = scale.ticks(TICKS * ONES.dot(sY)).slice(1)
         if ( ticks[ticks.length - 1] / domains.y[1] > 0.975 ) ticks.pop()
         setTickY( { ticks, values: ticks.map(scale) } )
-    }, [domains.y, sY])
+    }, [domains.y, sY, TICKS])
 
     useEffect(() => {
         const scale = scaleLinear().domain(domains.z)
         const ticks = scale.ticks(TICKS * ONES.dot(sZ))
         setTickZ( { ticks, values: ticks.map(scale) } )
-    }, [domains.z, sZ])
+    }, [domains.z, sZ, TICKS])
 
     // render
     return (

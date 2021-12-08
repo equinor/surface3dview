@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Controller = ({z, setZ}: any) => {
+const Controller = ({z, setZ, t, setT}: any) => {
 
     return (
         <div className='controller'>
@@ -11,6 +11,14 @@ const Controller = ({z, setZ}: any) => {
                 step={0.025} 
                 value={z}
                 onChange={({target}) => setZ( +target.value )}
+            /> <br />
+            <input 
+                type='range'
+                min={5} 
+                max={25} 
+                step={2} 
+                value={t}
+                onChange={({target}) => setT( +target.value )}
             />
         </div>
     )

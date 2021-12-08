@@ -17,12 +17,12 @@ const domains = {
     z: [100, 200]
 }
 
-const SurfaceContainer = ({scale}: {scale: Vector3}) => {
+const SurfaceContainer = ({scale, ticks}: {scale: Vector3, ticks: number}) => {
 
     const [map, depth] = useLoader(TextureLoader, ['./sinc.png', './sinc_gray.png'] )
 
     return <Suspense fallback={null}>
-        <Grid scale={scale} domains={domains} />
+        <Grid scale={scale} domains={domains} ticks={ticks} />
         <Surface map={map} depth={depth} scale={scale} />
     </Suspense>
 }
@@ -30,18 +30,19 @@ const SurfaceContainer = ({scale}: {scale: Vector3}) => {
 const App = () => {
 
     const [scale, set] = useState(new Vector3(1, 1, 0.2 ))
+    const [ticks, setT] = useState(15)
 
     return <div className='canvas'>
         <Control 
-            z={scale.z}
-            setZ={(z: number) => set( v => new Vector3(v.x, v.y, z))}
+            z={scale.z} setZ={(z: number) => set( v => new Vector3(v.x, v.y, z))}
+            t={ticks} setT={setT}
         />
         <Canvas frameloop="demand" linear flat >
             <ambientLight intensity={0.5}/>
             <pointLight intensity={0.5} position={[0.5, 0.5, 2]} />
             <pointLight intensity={0.5} position={[-0.5, -0.5, 2]} />
             <Suspense fallback={null}>
-                <SurfaceContainer scale={scale} />
+                <SurfaceContainer scale={scale} ticks={ticks} />
             </Suspense>
             <PerspectiveCamera
                 position={ [-0.5, -1.0, 1.5] }
