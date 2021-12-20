@@ -1,74 +1,73 @@
-
-/*  
+/*
  *  Copy/paste of drei Text wrapper
  *  https://github.com/pmndrs/drei/blob/2b925ba06f1eb5d16ff29d03772c57ebc68eb98a/src/core/Text.tsx
- */ 
+ */
 
 import * as React from 'react'
 import { Text as TextMeshImpl } from 'troika-three-text' // @ts-ignore
 import { ReactThreeFiber, useThree } from '@react-three/fiber'
 
 type Props = JSX.IntrinsicElements['mesh'] & {
-  children: React.ReactNode
-  color?: ReactThreeFiber.Color
-  fontSize?: number
-  maxWidth?: number
-  lineHeight?: number
-  letterSpacing?: number
-  textAlign?: 'left' | 'right' | 'center' | 'justify'
-  font?: string
-  anchorX?: number | 'left' | 'center' | 'right'
-  anchorY?: number | 'top' | 'top-baseline' | 'middle' | 'bottom-baseline' | 'bottom'
-  clipRect?: [number, number, number, number]
-  depthOffset?: number
-  direction?: 'auto' | 'ltr' | 'rtl'
-  overflowWrap?: 'normal' | 'break-word'
-  whiteSpace?: 'normal' | 'overflowWrap' | 'overflowWrap'
-  outlineWidth?: number | string
-  outlineOffsetX?: number | string
-  outlineOffsetY?: number | string
-  outlineBlur?: number | string
-  outlineColor?: ReactThreeFiber.Color
-  outlineOpacity?: number
-  strokeWidth?: number | string
-  strokeColor?: ReactThreeFiber.Color
-  strokeOpacity?: number
-  fillOpacity?: number
-  debugSDF?: boolean
-  onSync?: (troika: typeof TextMeshImpl) => void
+    children: React.ReactNode
+    color?: ReactThreeFiber.Color
+    fontSize?: number
+    maxWidth?: number
+    lineHeight?: number
+    letterSpacing?: number
+    textAlign?: 'left' | 'right' | 'center' | 'justify'
+    font?: string
+    anchorX?: number | 'left' | 'center' | 'right'
+    anchorY?: number | 'top' | 'top-baseline' | 'middle' | 'bottom-baseline' | 'bottom'
+    clipRect?: [number, number, number, number]
+    depthOffset?: number
+    direction?: 'auto' | 'ltr' | 'rtl'
+    overflowWrap?: 'normal' | 'break-word'
+    whiteSpace?: 'normal' | 'overflowWrap' | 'overflowWrap'
+    outlineWidth?: number | string
+    outlineOffsetX?: number | string
+    outlineOffsetY?: number | string
+    outlineBlur?: number | string
+    outlineColor?: ReactThreeFiber.Color
+    outlineOpacity?: number
+    strokeWidth?: number | string
+    strokeColor?: ReactThreeFiber.Color
+    strokeOpacity?: number
+    fillOpacity?: number
+    debugSDF?: boolean
+    onSync?: (troika: typeof TextMeshImpl) => void
 }
 
-// eslint-disable-next-line prettier/prettier
+// eslint-disable-next-line
 export const Text = React.forwardRef(
-  ({ anchorX = 'center', anchorY = 'middle', children, onSync, ...props }: Props, ref) => {
+    ({ anchorX = 'center', anchorY = 'middle', children, onSync, ...props }: Props, ref) => {
     const invalidate = useThree(({ invalidate }) => invalidate)
     const [troikaMesh] = React.useState(() => new TextMeshImpl())
     const [nodes, text] = React.useMemo(() => {
-      const n: React.ReactNode[] = []
-      let t = ''
-      React.Children.forEach(children, (child) => {
-        if (typeof child === 'string' || typeof child === 'number') {
-          t += child
-        } else {
-          n.push(child)
-        }
-      })
-      return [n, t]
+        const n: React.ReactNode[] = []
+        let t = ''
+        React.Children.forEach(children, (child) => {
+            if (typeof child === 'string' || typeof child === 'number') {
+                t += child
+            } else {
+                n.push(child)
+            }
+        })
+        return [n, t]
     }, [children])
     React.useLayoutEffect(
-      () =>
-        void troikaMesh.sync(() => {
-          invalidate()
-          if (onSync) onSync(troikaMesh)
-        })
+        () =>
+            // eslint-disable-next-line
+                void troikaMesh.sync(() => {
+                invalidate()
+                if (onSync) onSync(troikaMesh)
+            }),
     )
     React.useEffect(() => {
-      return () => troikaMesh.dispose()
+        return () => troikaMesh.dispose()
     }, [troikaMesh])
     return (
-      <primitive object={troikaMesh} ref={ref} text={text} anchorX={anchorX} anchorY={anchorY} {...props}>
-        {nodes}
-      </primitive>
+        <primitive object={troikaMesh} ref={ref} text={text} anchorX={anchorX} anchorY={anchorY} {...props}>
+            {nodes}
+        </primitive>
     )
-  }
-)
+})
