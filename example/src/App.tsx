@@ -39,9 +39,9 @@ const App = () => {
             t={ticks} setT={setT}
         />
         <Canvas frameloop="demand" linear flat >
-            <ambientLight intensity={0.5}/>
-            <pointLight intensity={0.5} position={[0.5, 0.5, 2]} />
-            <pointLight intensity={0.5} position={[-0.5, -0.5, 2]} />
+            <ambientLight intensity={1.0}/>
+            <pointLight intensity={0.10} position={[0.5, 0.5, 2]} />
+            <pointLight intensity={0.10} position={[-0.5, -0.5, 2]} />
             <Suspense fallback={null}>
                 <SurfaceContainer scale={scale} ticks={ticks} domains={domains} />
             </Suspense>

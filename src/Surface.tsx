@@ -5,6 +5,10 @@ interface IProps {
     map: DataTexture | Texture
     depth: DataTexture | Texture
     scale: Vector3
+
+    metalness?: number
+    roughness?: number
+    flatShading?: boolean
 }
 
 /**
@@ -14,7 +18,7 @@ interface IProps {
  * Depth ~ bump scale texture (gray scale)
  * Scale ~ vector of how to scale the surface
  */
-const Surface = ({map, depth, scale} : IProps) => {
+const Surface = ({map, depth, scale, ...props} : IProps) => {
 
     return (
         <mesh
@@ -29,14 +33,14 @@ const Surface = ({map, depth, scale} : IProps) => {
             <meshStandardMaterial 
                 map={map}
 
-                metalness={0.2}
+                metalness={0.1}
                 roughness={0.6}
-                flatShading
+
                 side={DoubleSide}
                 alphaToCoverage
-                fog={false}
-
                 onBeforeCompile={(shader) => setUpShader(shader, depth)}
+
+                {...props}
             />
         </mesh>
     )
@@ -60,7 +64,11 @@ function setUpShader(shader: any, textureDepth: DataTexture | Texture) {
     uniform float displacementBias;
     uniform vec3 normalZ;
     varying float vAmount;
-    varying vec3 vNormal;
+
+    #ifdef FLAT_SHADED
+        varying vec3 vNormal;
+    #endif
+
     #ifdef USE_TANGENT
         varying vec3 vTangent;
         varying vec3 vBitangent;
