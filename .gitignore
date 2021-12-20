@@ -24,4 +24,5 @@ nala
 # editor
 .vscode
 .idea
+setup.bashrc
 
