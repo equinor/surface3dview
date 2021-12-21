@@ -19,7 +19,6 @@ import { Canvas, useLoader } from '@react-three/fiber'
 import { Object3D, Vector3, TextureLoader } from "three";
 
 import { Grid, Surface } from 'surface-3d-viewer'
-import 'surface-3d-viewer/dist/index.css'
 
 Object3D.DefaultUp.set(0, 0, 1);
 
@@ -43,6 +42,5 @@ const App = ({scale, ticks, domains}: any) => {
     </Canvas>
 ```
 
-## License
-
-Copyright (c) 2021 Bluware Inc. All rights reserved. © [andberge](https://github.com/andberge)
+## Example
+[Github Pages](https://equinor.github.io/surface3dview/)
