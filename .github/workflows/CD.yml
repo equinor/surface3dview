@@ -1,0 +1,45 @@
+name: CD
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14.x
+        
+    - name: Azure key vault login
+      uses: Azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_KEY_VAULT }}
+          
+    - name: Fetch secrets from key vault
+      uses: Azure/get-keyvault-secrets@v1
+      with:
+        keyvault: "dipvp"
+        secrets: 'NPM-TOKEN'
+      id: fetchSecrets
+    
+    - name: Write npmrc
+      run: |
+        echo "@equinor-internal:registry=https://npm.equinor.com" > $HOME/.npmrc
+        echo //npm.equinor.com/:_authToken=${{ steps.fetchSecrets.outputs.NPM-TOKEN }} >> $HOME/.npmrc
+        yarn config set registry https://npm.equinor.com
+
+    - name: Publish
+      run: yarn publish --access=public
+
+    - name: Deploy gh-pages
+      run: yarn deploy
