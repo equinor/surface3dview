@@ -6,7 +6,6 @@ const GpuCheck = () => {
 
     useEffect(() => {
         if (!gpu.tier) alert('No hardware acceleration found')
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return null
