@@ -1,71 +1,71 @@
 {
-  "name": "surface-3d-viewer",
-  "version": "1.0.0",
-  "description": "3D surface viewer basedupon three &amp; fiber",
-  "author": "andberge",
-  "license": "MIT",
-  "repository": "andberge/surface-3d-viewer",
-  "main": "dist/index.js",
-  "module": "dist/index.modern.js",
-  "source": "src/index.tsx",
-  "engines": {
-    "node": ">=14"
-  },
-  "scripts": {
-    "build": "microbundle --no-compress --format modern,cjs --jsx React.createElement",
-    "start": "microbundle watch --no-compress --format modern,cjs --jsx React.createElement",
-    "prepare": "run-s build",
-    "test": "run-s test:unit test:lint test:build",
-    "test:build": "run-s build",
-    "test:lint": "eslint .",
-    "test:unit": "cross-env CI=1 react-scripts test --env=jsdom",
-    "test:watch": "react-scripts test --env=jsdom",
-    "predeploy": "cd example && yarn install && yarn run build",
-    "deploy": "gh-pages -d example/build"
-  },
-  "publishConfig": {
-    "registry": "https://npm.equinor.com"
-  },
-  "peerDependencies": {
-    "react": "^17.0.2"
-  },
-  "devDependencies": {
-    "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^12.0.0",
-    "@testing-library/user-event": "^13.2.1",
-    "@types/d3-scale": "^4.0.2",
-    "@types/jest": "^27.0.1",
-    "@types/node": "^17.0.1",
-    "@types/react": "^17.0.18",
-    "@types/react-dom": "^17.0.9",
-    "@types/three": "^0.135.0",
-    "@typescript-eslint/eslint-plugin": "^5.7.0",
-    "@typescript-eslint/parser": "^5.7.0",
-    "cross-env": "^7.0.3",
-    "eslint": "^7.32.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-react": "^7.27.1",
-    "gh-pages": "^3.2.3",
-    "microbundle": "^0.13.3",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^2.5.1",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-scripts": "^5.0.0",
-    "typescript": "^4.3.5"
-  },
-  "files": [
-    "dist"
-  ],
-  "dependencies": {
-    "@react-three/fiber": "^7.0.21",
-    "d3-scale": "^4.0.2",
-    "three": "^0.135.0",
-    "troika-three-text": "^0.44.0"
-  },
-  "jest": {
-    "transformIgnorePatterns": [
-      "/node_modules/(?!d3-.*|internmap)"
-    ]
-  }
+    "name": "surface3dviewer",
+    "version": "1.0.2",
+    "description": "3D surface viewer basedupon three &amp; fiber",
+    "author": "Blueware",
+    "license": "MIT",
+    "repository": "equinor/surface3dview",
+    "main": "dist/index.js",
+    "module": "dist/index.modern.js",
+    "source": "src/index.tsx",
+    "engines": {
+        "node": ">=14"
+    },
+    "scripts": {
+        "build": "microbundle --no-compress --format modern,cjs --jsx React.createElement",
+        "start": "microbundle watch --no-compress --format modern,cjs --jsx React.createElement",
+        "prepare": "run-s build",
+        "test": "run-s test:unit test:lint test:build",
+        "test:build": "run-s build",
+        "test:lint": "eslint .",
+        "test:unit": "cross-env CI=1 react-scripts test --env=jsdom",
+        "test:watch": "react-scripts test --env=jsdom",
+        "predeploy": "cd example && yarn install && yarn run build",
+        "deploy": "gh-pages -d example/build"
+    },
+    "publishConfig": {
+        "registry": "https://npm.equinor.com"
+    },
+    "peerDependencies": {
+        "react": "^17.0.2"
+    },
+    "devDependencies": {
+        "@testing-library/jest-dom": "^5.14.1",
+        "@testing-library/react": "^12.0.0",
+        "@testing-library/user-event": "^13.2.1",
+        "@types/d3-scale": "^4.0.2",
+        "@types/jest": "^27.0.1",
+        "@types/node": "^17.0.1",
+        "@types/react": "^17.0.18",
+        "@types/react-dom": "^17.0.9",
+        "@types/three": "^0.135.0",
+        "@typescript-eslint/eslint-plugin": "^5.7.0",
+        "@typescript-eslint/parser": "^5.7.0",
+        "cross-env": "^7.0.3",
+        "eslint": "^7.32.0",
+        "eslint-plugin-prettier": "^4.0.0",
+        "eslint-plugin-react": "^7.27.1",
+        "gh-pages": "^3.2.3",
+        "microbundle": "^0.13.3",
+        "npm-run-all": "^4.1.5",
+        "prettier": "^2.5.1",
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2",
+        "react-scripts": "^5.0.0",
+        "typescript": "^4.3.5"
+    },
+    "files": [
+        "dist"
+    ],
+    "dependencies": {
+        "@react-three/fiber": "^7.0.21",
+        "d3-scale": "^4.0.2",
+        "three": "^0.135.0",
+        "troika-three-text": "^0.44.0"
+    },
+    "jest": {
+        "transformIgnorePatterns": [
+            "/node_modules/(?!d3-.*|internmap)"
+        ]
+    }
 }
