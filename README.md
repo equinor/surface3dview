@@ -2,12 +2,12 @@
 
 > 3D surface viewer basedupon three &amp; fiber
 
-[![NPM](https://img.shields.io/npm/v/surface-3d-viewer.svg)](https://npm.equinor.com/package/surface-3d-viewer) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![NPM](https://img.shields.io/npm/v/surface-3d-viewer.svg)](https://npm.equinor.com/surface3dviewer) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 ## Install
 
 ```bash
-npm install --save surface-3d-viewer
+npm install --save surface3dviewer
 ```
 
 ## Usage
@@ -18,7 +18,7 @@ import React from 'react'
 import { Canvas, useLoader } from '@react-three/fiber'
 import { Object3D, Vector3, TextureLoader } from "three";
 
-import { Grid, Surface } from 'surface-3d-viewer'
+import { Grid, Surface } from 'surface3dviewer'
 
 Object3D.DefaultUp.set(0, 0, 1);
 
