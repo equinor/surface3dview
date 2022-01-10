@@ -1,5 +1,6 @@
 import React from 'react'
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 const Controller = ({ z, setZ, x, setX, t, setT }: any) => {
     return (
         <div className="controller">

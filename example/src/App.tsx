@@ -9,6 +9,7 @@ import GpuCheck from './GpuCheck'
 
 Object3D.DefaultUp.set(0, 0, 1)
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 const SurfaceContainer = ({ scale, ticks, domains }: any) => {
     const [map, depth] = useLoader(TextureLoader, ['./sinc.png', './sinc_gray.png'])
 
