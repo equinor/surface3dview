@@ -1,6 +1,6 @@
 {
   "name": "surface-3d-viewer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "3D surface viewer basedupon three &amp; fiber",
   "author": "andberge",
   "license": "MIT",
