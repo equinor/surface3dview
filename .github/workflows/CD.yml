@@ -43,6 +43,9 @@ jobs:
         echo //npm.equinor.com/:_authToken=${{ steps.fetchSecrets.outputs.NPM-TOKEN }} >> $HOME/.npmrc
         yarn config set registry https://npm.equinor.com
 
+    - name: Install dependencies
+      run: yarn
+
     - name: Publish
       run: yarn publish --access=public
 
