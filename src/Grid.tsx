@@ -321,29 +321,36 @@ interface ILabelY {
 
 const LabelsZ = ({ sX, sY, sZ, pZX, pYZ, ticks, style }: ILabelY) => {
     // find zLabel axis
+    const createPosArray = () => { return [pZX, pZX.clone().add(sX), pYZ, pYZ.clone().add(sY)]}
+    const createTangentArray = () => { return [sX.clone().multiplyScalar(-1), sX, sY.clone().multiplyScalar(-1), sY]}
+    const createPTArr = () => {return {pos: createPosArray(), tangent: createTangentArray()}}
+
     const { camera } = useThree()
+    const [idx, setIdx] = useState(0)
+    const [ptArr, setPtArr] = useState(createPTArr())
+
     const [labelZ, setLabelZ] = useState(pZX)
     const [tagentZ, setTangetZ] = useState(sX)
 
-    useEffect(() => {
-        const arr = [pZX, pZX.clone().add(sX), pYZ, pYZ.clone().add(sY)].map((v) => camera.position.distanceTo(v))
+    useEffect(()=>{
+        setPtArr(createPTArr())
+    }, [pZX, pYZ,sX, sY])
 
-        const index = arr.indexOf(Math.min(...arr))
-        if (index === 0) {
-            setLabelZ(pZX)
-            setTangetZ(sX.clone().multiplyScalar(-1))
-        } else if (index === 1) {
-            setLabelZ(pZX.clone().add(sX))
-            setTangetZ(sX)
-        } else if (index === 2) {
-            setLabelZ(pYZ)
-            setTangetZ(sY.clone().multiplyScalar(-1))
-        } else if (index === 3) {
-            setLabelZ(pYZ.clone().add(sY))
-            setTangetZ(sY)
-        }
-    }, [sX, sY, pYZ, pZX] ) // eslint-disable-line
+    useEffect(()=>{
+        setLabelZ(ptArr.pos[idx])
+        setTangetZ(ptArr.tangent[idx])
+    },[idx, ptArr])
 
+    // Check if label needs to move
+    useFrame(() => {
+        const distArr = ptArr.pos.map((v) => camera.position.distanceTo(v))
+        
+        const index = distArr.indexOf(Math.min(...distArr))
+        setIdx(index)
+    })
+
+    // console.log(ptArr)
+    // console.log(idx)
     return <Labels position={labelZ} v={sZ} ticks={ticks} tangent={tagentZ} style={style} />
 }
 
@@ -359,15 +366,20 @@ const Labels = ({ position: p, v, ticks, tangent, style }: ILabelsPlane) => {
     const { camera } = useThree()
     const [invert, set] = useState(false)
     const [position, opacity] = useFadeIn(p)
-
     // Change text rotation
     useFrame(() => {
         const pX = new Vector3(0, 0.0, -1).unproject(camera).sub(new Vector3(1, 0, -1).unproject(camera)).projectOnPlane(Z)
 
         set(pX.dot(tangent) > 0)
+
     })
 
     const anchorX = invert ? 'right' : 'left'
+    // if(v.x == 0 && v.y == 0 ){
+    //     console.log(tangent)
+    //     console.log(tangent.project(camera))
+    // }
+        
 
     return (
         <group position={position}>

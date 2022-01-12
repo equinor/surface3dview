@@ -16,6 +16,10 @@ const SurfaceContainer = ({ scale, ticks, domains }: any) => {
         <Suspense fallback={null}>
             <Grid scale={scale} domains={domains} ticks={ticks} />
             <Surface map={map} depth={depth} scale={scale} />
+            <mesh position={new Vector3(0,0,0)}>
+                <boxGeometry args={[0.1, 0.1, 0.1]} />
+                <meshStandardMaterial color={'red'}/>
+            </mesh>
         </Suspense>
     )
 }
