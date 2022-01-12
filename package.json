@@ -27,7 +27,10 @@
         "registry": "https://npm.equinor.com"
     },
     "peerDependencies": {
-        "react": "^17.0.2"
+        "react": "^17.0.2",
+        "@react-three/fiber": "^7.0.21",
+        "three": "^0.135.0",
+        "troika-three-text": "^0.44.0"
     },
     "devDependencies": {
         "@testing-library/jest-dom": "^5.14.1",
@@ -58,10 +61,7 @@
         "dist"
     ],
     "dependencies": {
-        "@react-three/fiber": "^7.0.21",
-        "d3-scale": "^4.0.2",
-        "three": "^0.135.0",
-        "troika-three-text": "^0.44.0"
+        "d3-scale": "^4.0.2"
     },
     "jest": {
         "transformIgnorePatterns": [
