@@ -1,6 +1,6 @@
 {
     "name": "surface3dviewer",
-    "version": "1.0.5",
+    "version": "1.0.7",
     "description": "3D surface viewer basedupon three &amp; fiber",
     "author": "Blueware",
     "license": "MIT",
@@ -9,7 +9,7 @@
     "module": "dist/index.modern.js",
     "source": "src/index.tsx",
     "engines": {
-        "node": ">=14"
+        "node": ">=12"
     },
     "scripts": {
         "build": "microbundle --no-compress --format modern,cjs --jsx React.createElement",
@@ -55,7 +55,10 @@
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
         "react-scripts": "^5.0.0",
-        "typescript": "^4.3.5"
+        "typescript": "^4.3.5",
+        "@react-three/fiber": "^7.0.21",
+        "three": "^0.135.0",
+        "troika-three-text": "^0.44.0"
     },
     "files": [
         "dist"
