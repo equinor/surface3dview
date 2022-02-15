@@ -7,6 +7,7 @@ interface IProps {
     map: DataTexture
     depth: DataTexture
     scale: Vector3
+    meshRef:any
 
     marker?: boolean
 
@@ -22,7 +23,7 @@ interface IProps {
  * Depth ~ bump scale texture (gray scale)
  * Scale ~ vector of how to scale the surface
  */
-const Surface = ({ map, depth, scale,...props }: IProps) => {
+const Surface = ({ map, depth, scale, meshRef,...props }: IProps) => {
     const [markerPos, setMarkerPos] = useState(new Vector3(0, 0, 0))
     const [textPos, settextPos] = useState(markerPos)
     const [textValue, setTextValue] = useState(0);
@@ -105,7 +106,7 @@ const Surface = ({ map, depth, scale,...props }: IProps) => {
 
     return (
         <Suspense fallback={null}>
-            <mesh position={[0.5 * scale.x, 0.5 * scale.y, 0]} scale={scale} onPointerMove={onMouseHover} geometry={geom}>
+            <mesh ref={meshRef} position={[0.5 * scale.x, 0.5 * scale.y, 0]} scale={scale} onPointerMove={onMouseHover} geometry={geom}>
                 <meshStandardMaterial
                     map={map}
                     metalness={0.1}
