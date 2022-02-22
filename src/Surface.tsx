@@ -40,8 +40,8 @@ const Surface = ({ map, depth, scale, ...props }: IProps) => {
             if (depth == null) {
                 return;
             }
-            let n = depth.n;
-            let m = depth.m;
+            const n = depth.n;
+            const m = depth.m;
 
             const geomn = new PlaneBufferGeometry(1, 1, n-1, m-1)
             const pos = geomn.getAttribute("position");
