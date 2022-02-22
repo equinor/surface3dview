@@ -20,7 +20,7 @@ const SurfaceContainer = ({ scale, ticks, domains, marker, clickMarker }: any) =
     }, [])
 
     const readImages = async () => {
-        await imageDataFromSource('./sinc_gray.png').then(v => {
+        await imageDataFromSource('./sinc_gray.png',0.01).then(v => {
             if(v == null) return;
             const depthn=
             {
@@ -49,7 +49,7 @@ const SurfaceContainer = ({ scale, ticks, domains, marker, clickMarker }: any) =
     )
 }
 
-async function imageDataFromSource(source: string) {
+async function imageDataFromSource(source: string, scale:number) {
     const image = Object.assign(new Image(), { src: source });
     await new Promise<void>(resolve => image.addEventListener('load', () => resolve()));
     const context = Object.assign(document.createElement('canvas'), {
@@ -58,8 +58,8 @@ async function imageDataFromSource(source: string) {
     }).getContext('2d');
     if (context) {
         context.imageSmoothingEnabled = false;
-        context.drawImage(image, 0, 0);
-        return context.getImageData(0, 0, image.width, image.height);
+        context.drawImage(image, 0, 0, image.width*scale, image.height*scale);
+        return context.getImageData(0, 0, image.width*scale, image.height*scale);
     }
     return null;
 }

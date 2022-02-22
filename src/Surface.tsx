@@ -40,29 +40,17 @@ const Surface = ({ map, depth, scale, ...props }: IProps) => {
             if (depth == null) {
                 return;
             }
-            console.log(depth)
-            const t = 2000;
+            let n = depth.n;
+            let m = depth.m;
 
-            let x = depth.n;
-            let y = depth.m;
-            if (x * y > t) {
-                const r = depth.n / depth.m;
-                y = Math.floor(Math.sqrt(t / r))
-                x = Math.floor(r * y);
-            }
-
-            const geomn = new PlaneBufferGeometry(1, 1, x, y)
+            const geomn = new PlaneBufferGeometry(1, 1, n-1, m-1)
             const pos = geomn.getAttribute("position");
             const pa = pos.array as number[];
-            const w = x + 1;
-            const h = y + 1;
-            for (let j = 0; j < h; j++) {
-                for (let i = 0; i < w; i++) {
-                    const idx = j * w + i;
-                    const imgI = Math.floor((depth.n - 1) * i / (w - 1))
-                    const imgJ = Math.floor((depth.m - 1) * j / (h - 1))
-                    const idxmap = imgJ * depth.n + imgI
-                    let d = depth.data[idxmap];
+
+            for (let j = 0; j < m; j++) {
+                for (let i = 0; i < n; i++) {
+                    const idx = j * n + i;
+                    let d = depth.data[idx];
                     if (isNaN(d))
                         d = 0;
                     pa[3 * idx + 2] = d;
