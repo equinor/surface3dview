@@ -37,10 +37,14 @@ const SurfaceContainer = ({ scale, ticks, domains, marker, clickMarker }: any) =
         ).catch((e)=>{console.log(e)})
     }
 
+    const pToM = (x:number,y:number) => `This is a function x = ${Math.round(x * 1000) / 1000} y = ${Math.round(y * 1000) / 1000}`
+
+    // const test = (x:number,y:number) => <div style={{background:'black'}}>This is a function x = {Math.round(x * 1000) / 1000} y = {Math.round(y * 1000) / 1000}</div>
+
     return (
         <Suspense fallback={null}>
             <Grid scale={scale} domains={domains} ticks={ticks} />
-            <Surface map={map} depth={depth} scale={scale} continousMarker={marker} clickMarker={clickMarker} />
+            <Surface map={map} depth={depth} scale={scale} continousMarker={marker} clickMarker={clickMarker} positionToMarkerText={pToM} />
         </Suspense>
     )
 }
@@ -88,7 +92,7 @@ const App = () => {
                     <SurfaceContainer scale={scale} ticks={ticks} domains={domains} marker={marker} clickMarker={clickMarker} />
                 </Suspense>
                 <PerspectiveCamera position={[-0.5, -1.0, 1.5]} near={0.01} far={1000} makeDefault />
-                <OrbitControls target={[0.5, 0.5, 0]} />
+                <OrbitControls target={[0.5, 0.5, 0]}/>
                 {process.env.NODE_ENV === 'development' && <Stats />}
             </Canvas>
 
