@@ -2,7 +2,6 @@
 import { ThreeEvent, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { DoubleSide, DataTexture, Texture, Vector3, Vector2, Shape, BufferGeometry, PlaneBufferGeometry, CanvasTexture, LinearFilter, ClampToEdgeWrapping, SpriteMaterial, Sprite, ShapeGeometry, TextureLoader, ShapeBufferGeometry } from 'three'
-import { Text } from './Text'
 import { Html } from './Html'
 
 
@@ -102,6 +101,7 @@ const Surface = ({ map, depth, scale, ...props }: IProps) => {
 
     const handleMouseDownClick = (e: ThreeEvent<PointerEvent>) => {
         e.stopPropagation()
+        // Register double click.
         if (mouseClicked) {
             setClickMarkerPos(e.point)
             setRenderClickMarker(true)
@@ -110,9 +110,10 @@ const Surface = ({ map, depth, scale, ...props }: IProps) => {
         }
         else {
             setMouseClicked(true);
-            setTimeoutId(setTimeout(() => setMouseClicked(false), 500));
+            // According to this it is not possible to fetch double click timing from the OS
+            // https://stackoverflow.com/questions/8333764/can-i-query-detect-the-double-click-speed-for-a-webpage-user
+            setTimeoutId(setTimeout(() => setMouseClicked(false), 500)); // 0.5 s is default doubleclick time in windows
         }
-
     }
 
     const onMouseHover = useContinousMarker ? handleMouseHover : undefined;
