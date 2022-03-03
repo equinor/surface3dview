@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Vector3, BufferGeometry, Line } from 'three'
+import { Vector3, BufferGeometry, Line, Shader } from 'three'
 import { useThree, useFrame, ReactThreeFiber, extend } from '@react-three/fiber'
 import { scaleLinear } from 'd3-scale'
 
@@ -30,8 +30,6 @@ const X = new Vector3(1, 0, 0)
 const Y = new Vector3(0, 1, 0)
 const Z = new Vector3(0, 0, 1)
 const FADE_FACTOR = 0.001
-const GRIDOffsetFactor = 10
-const GRIDOffsetUnits = 1
 
 interface IGridLines {
     scale: Vector3
@@ -278,30 +276,37 @@ const Lines = ({ position, setPosition, v1, v2, scale, v1Ticks, v2Ticks, style }
         <group position={p}>
             {lineGeometrys.map((lineGeometry) => (
                 <line_ key={lineGeometry.uuid} geometry={lineGeometry}>
-                    <meshBasicMaterial
+                    <lineBasicMaterial
                         attach="material"
+                        linewidth={1}
                         color={style?.color || 'black'}
                         opacity={opacity * 0.5}
-                        polygonOffset
-                        polygonOffsetFactor={GRIDOffsetFactor}
-                        polygonOffsetUnits={GRIDOffsetUnits}
+                        onBeforeCompile={setUpShader}
                     />
                 </line_>
             ))}
 
             {endGeometrys.map((lineGeometry) => (
                 <line_ key={lineGeometry.uuid} geometry={lineGeometry}>
-                    <meshBasicMaterial
+                    <lineBasicMaterial
                         attach="material"
                         color={style?.color || 'black'}
                         opacity={opacity}
-                        polygonOffset
-                        polygonOffsetFactor={GRIDOffsetFactor}
-                        polygonOffsetUnits={GRIDOffsetUnits}
+                        onBeforeCompile={setUpShader}
                     />
                 </line_>
             ))}
         </group>
+    )
+}
+
+function setUpShader(shader: Shader) {
+    shader.vertexShader = shader.vertexShader.replace(
+        '#include <project_vertex>',
+        `
+        #include <project_vertex>
+        gl_Position.z += 0.0001;
+        `,
     )
 }
 
