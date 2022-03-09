@@ -1,24 +1,19 @@
 
 import { ThreeEvent, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { Suspense, useEffect, useRef, useState } from 'react';
-import { DoubleSide, DataTexture, Texture, Vector3, Vector2, Shape, BufferGeometry, PlaneBufferGeometry, CanvasTexture, LinearFilter, ClampToEdgeWrapping, SpriteMaterial, Sprite, ShapeGeometry, TextureLoader, ShapeBufferGeometry } from 'three'
+import { DoubleSide, DataTexture, Texture, Vector3, Vector2, Shape, BufferGeometry, PlaneBufferGeometry, CanvasTexture, LinearFilter, ClampToEdgeWrapping, SpriteMaterial, Sprite, ShapeGeometry, TextureLoader, ShapeBufferGeometry, Shader } from 'three'
 import { Html } from './Html'
+import { imageDataFromSource } from './utils'
 
-
-interface IDepth {
-    data: number[]
-    n: number
-    m: number
-}
 
 interface IProps {
     map: DataTexture | Texture
-    depth: IDepth | null
+    depth: DataTexture | Texture
     scale: Vector3
 
     clickMarker?: boolean
     continousMarker?: boolean
-    positionToMarkerText?: (x: number, y:number) => string
+    positionToMarkerText?: (x: number, y: number) => string
 
     metalness?: number
     roughness?: number
@@ -33,33 +28,53 @@ interface IProps {
  * Scale ~ vector of how to scale the surface
  */
 const Surface = ({ map, depth, scale, ...props }: IProps) => {
-
-    const [geom, setGeom] = useState(new PlaneBufferGeometry())
+    const [markerGeom, setMarkerGeom] = useState(new PlaneBufferGeometry())
     useEffect(
         () => {
-            if (depth == null) {
-                return;
+            let img = depth.image
+            if (!(depth instanceof DataTexture)) {
+                img = imageDataFromSource(depth.image, 1)
+                if(img == null) return
             }
-            const n = depth.n;
-            const m = depth.m;
+            update(img)
 
-            const geomn = new PlaneBufferGeometry(1, 1, n-1, m-1)
-            const pos = geomn.getAttribute("position");
-            const pa = pos.array as number[];
-
-            for (let j = 0; j < m; j++) {
-                for (let i = 0; i < n; i++) {
-                    const idx = j * n + i;
-                    let d = depth.data[idx];
-                    if (isNaN(d))
-                        d = 0;
-                    pa[3 * idx + 2] = d;
-                }
-            }
-
-            setGeom(geomn);
         }, [depth]
     )
+
+    const update = (image: ImageData) => {
+        const t = 2000;
+        const n = image.width;
+        const m = image.height;
+
+        let x = image.width;
+        let y = image.height;
+        if (x * y > t) {
+            const r = n / m;
+            y = Math.floor(Math.sqrt(t / r))
+            x = Math.floor(r * y);
+        }
+
+        const geomn = new PlaneBufferGeometry(1, 1, x - 1, y - 1)
+        const pos = geomn.getAttribute("position");
+        const pa = pos.array as number[];
+
+        for (let j = 0; j < y; j++) {
+            for (let i = 0; i < x; i++) {
+                const di = Math.floor(i * (n - 1) / (x - 1))
+                const dj = Math.floor(j * (m - 1) / (y - 1))
+                const didx = dj * n + di;
+
+                let d = 0.3*(image.data[4 * didx] + image.data[4 * didx + 1] + image.data[4 * didx + 2]);
+                if (isNaN(d))
+                    d = 0;
+
+                const idx = j * x + i;
+                pa[3 * idx + 2] = d/255;
+            }
+        }
+
+        setMarkerGeom(geomn);
+    }
 
     const [continousMarkerPos, setContinousMarkerPos] = useState(new Vector3(0, 0, 0))
     const [clickMarkerPos, setClickMarkerPos] = useState(new Vector3(0, 0, 0))
@@ -110,30 +125,101 @@ const Surface = ({ map, depth, scale, ...props }: IProps) => {
 
     const onMouseDownClick = useClickMarker ? handleMouseDownClick : undefined;
 
+    // Normal surface using shader to set depth
+    const surface = <mesh position={[0.5 * scale.x, 0.5 * scale.y, 0]} scale={scale}>
+        <planeBufferGeometry attach="geometry" args={[1, 1, depth.image.width - 1, depth.image.height - 1]} />
+        <meshStandardMaterial
+            map={map}
+            metalness={0.1}
+            roughness={0.6}
+            side={DoubleSide}
+            alphaToCoverage
+            onBeforeCompile={(shader) => setUpShader(shader, depth)}
+            {...props}
+        />
+    </mesh>
+
+    // Low resolution surface for raycasting
+    const markerSurface = <mesh position={[0.5 * scale.x, 0.5 * scale.y, 0]} scale={scale} onPointerDown={onMouseDownClick} onPointerMove={onMouseHover} onPointerEnter={onMouseEnter} onPointerLeave={onMouseExit} geometry={markerGeom}>
+        <meshBasicMaterial
+            transparent
+            opacity={0}
+            side={DoubleSide}
+        />
+    </mesh>
+
+
     return (
         <Suspense fallback={null}>
-            <mesh position={[0.5 * scale.x, 0.5 * scale.y, 0]} scale={scale} onPointerDown={onMouseDownClick} onPointerMove={onMouseHover} onPointerEnter={onMouseEnter} onPointerLeave={onMouseExit} geometry={geom}>
-                <meshStandardMaterial
-                    map={map}
-                    metalness={0.1}
-                    roughness={0.6}
-                    side={DoubleSide}
-                    alphaToCoverage
-                    {...props}
-                />
-            </mesh>
-
+            {surface}
+            {markerSurface}
             <Marker position={continousMarkerPos} visible={useContinousMarker && renderContinousMarker} positionToMarkerText={props.positionToMarkerText} />
-            <Marker position={clickMarkerPos} visible={useClickMarker && renderClickMarker} positionToMarkerText={props.positionToMarkerText} onCloseMarkerClick={(v) => setRenderClickMarker(false)}/>
+            <Marker position={clickMarkerPos} visible={useClickMarker && renderClickMarker} positionToMarkerText={props.positionToMarkerText} onCloseMarkerClick={(v) => setRenderClickMarker(false)} />
 
         </Suspense>
     )
 }
 
+function setUpShader(shader: Shader, textureDepth: DataTexture | Texture) {
+    // uniforms
+    shader.uniforms.displacementMap = { value: textureDepth }
+    shader.uniforms.displacementScale = { value: 1.0 }
+    shader.uniforms.displacementBias = { value: 0.0 }
+    shader.uniforms.normalZ = { value: new Vector3(0, 0, 1) }
+    const uniforms = `
+    uniform sampler2D displacementMap;
+    uniform float displacementScale;
+    uniform float displacementBias;
+    uniform vec3 normalZ;
+    varying float vAmount;
+    #ifdef FLAT_SHADED
+        varying vec3 vNormal;
+    #endif
+    #ifdef USE_TANGENT
+        varying vec3 vTangent;
+        varying vec3 vBitangent;
+    #endif`
+
+    // vertex shader
+
+    shader.vertexShader = `${uniforms}\n${shader.vertexShader}\n`
+
+    // shader.vertexShader = shader.vertexShader.replace("#include <beginnormal_vertex>", "");
+    shader.vertexShader = shader.vertexShader.replace('#include <morphnormal_vertex>', '')
+    shader.vertexShader = shader.vertexShader.replace('#include <skinnormal_vertex>', '')
+
+    // shader.vertexShader = shader.vertexShader.replace( "#include <displacementmap_vertex>", "");
+    shader.vertexShader = shader.vertexShader.replace(
+        '#include <displacementmap_vertex>',
+        `
+            transformed += normalize( normalZ ) * ( texture2D( displacementMap, vUv ).x * displacementScale + displacementBias );
+        `,
+    )
+
+    shader.vertexShader = shader.vertexShader.replace(
+        '#include <project_vertex>',
+        `
+        #include <project_vertex>
+        vAmount = texture2D( displacementMap, vUv ).r;
+        vec3 newPosition = position + normalZ * displacementScale * vAmount;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
+        `,
+    )
+
+    shader.vertexShader = shader.vertexShader.replace(
+        '#include <defaultnormal_vertex>',
+        `
+        vec3 transformedNormal = objectNormal;
+        vNormal = normalize( transformedNormal );`,
+    )
+}
+
+
+
 interface IMarkerProps {
     position: Vector3
 
-    positionToMarkerText?: (x: number, y:number) => string
+    positionToMarkerText?: (x: number, y: number) => string
     onCloseMarkerClick?: React.MouseEventHandler<HTMLButtonElement>
     visible?: boolean
 }
@@ -163,10 +249,10 @@ const Marker = ({ position, ...props }: IMarkerProps) => {
             pos.needsUpdate = true;
 
             let txt = ''
-            if(props.positionToMarkerText){
+            if (props.positionToMarkerText) {
                 txt = props.positionToMarkerText(position.x, position.y)
             }
-            else{
+            else {
                 txt = (Math.round(position.z * 1000) / 1000).toString()
             }
             setTextValue(txt);
@@ -186,8 +272,8 @@ const Marker = ({ position, ...props }: IMarkerProps) => {
                     polygonOffsetUnits={GRIDOffsetUnits}
                 />
             </line_>
-            
-            <Billboard name={textValue.toString()} position={textPos} onCloseButtonClick={props.onCloseMarkerClick} {...props}/>
+
+            <Billboard name={textValue.toString()} position={textPos} onCloseButtonClick={props.onCloseMarkerClick} {...props} />
         </Suspense>
     )
 }
@@ -195,22 +281,22 @@ interface IBillboard {
     position: Vector3,
     name: string
 
-    visible?:boolean
+    visible?: boolean
     onCloseButtonClick?: React.MouseEventHandler<HTMLButtonElement>
 }
 
-const Billboard = ({ position, name, ...props}: IBillboard) =>{
+const Billboard = ({ position, name, ...props }: IBillboard) => {
     // Cound not get visible prop on Html to work.
-    if(!props.visible){
-        return(<></>)
-    } 
-    return(
+    if (!props.visible) {
+        return (<></>)
+    }
+    return (
         <Html position={position} center>
-            <div style={{background:'white', width:'300px', height:'60px', boxShadow:'0px 0px 5px 0px black', borderRadius:"20px", display:'grid', gridTemplateColumns:'20px auto 20px', gridTemplateRows:'20px auto 20px'}}>
-                <div style={{gridColumn:'2', gridRow:'2'}}>
+            <div style={{ background: 'white', width: '300px', height: '60px', boxShadow: '0px 0px 5px 0px black', borderRadius: "20px", display: 'grid', gridTemplateColumns: '20px auto 20px', gridTemplateRows: '20px auto 20px' }}>
+                <div style={{ gridColumn: '2', gridRow: '2' }}>
                     {name}
                 </div>
-                <button style={{gridColumn:'3', gridRow:'0'}} type='button' onClick={props.onCloseButtonClick}>
+                <button style={{ gridColumn: '3', gridRow: '0' }} type='button' onClick={props.onCloseButtonClick}>
                 </button>
             </div>
         </Html>

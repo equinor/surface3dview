@@ -1,5 +1,5 @@
-import { Suspense, useState, useMemo, useEffect } from 'react'
-import { Object3D, Vector3, TextureLoader, DataTexture, Texture } from 'three'
+import { Suspense, useState, useMemo } from 'react'
+import { Object3D, Vector3, TextureLoader } from 'three'
 import { Canvas, useLoader } from '@react-three/fiber'
 import { Stats, OrbitControls, PerspectiveCamera } from '@react-three/drei'
 import { Grid, Surface } from 'surface-3d-viewer'
@@ -13,29 +13,7 @@ Object3D.DefaultUp.set(0, 0, 1)
 const SurfaceContainer = ({ scale, ticks, domains, marker, clickMarker }: any) => {
 
     const map = useLoader(TextureLoader, './sinc.png')
-    const [depth, setDepth] = useState(null);
-
-    useEffect(() => {
-        readImages();
-    }, [])
-
-    const readImages = async () => {
-        await imageDataFromSource('./sinc_gray.png',0.01).then(v => {
-            if(v == null) return;
-            const depthn=
-            {
-                n: v.width,
-                m:v.height,
-                data: new Array<number>()
-            };
-            for(let i=0;i<v.data.length/4; i++){
-                depthn.data.push(v.data[4*i]/255);
-            }
-            // @ts-ignore
-            setDepth(depthn);
-        }
-        ).catch((e)=>{console.log(e)})
-    }
+    const depth = useLoader(TextureLoader, './sinc_gray.png')
 
     const pToM = (x:number,y:number) => `This is a function x = ${Math.round(x * 1000) / 1000} y = ${Math.round(y * 1000) / 1000}`
 
@@ -47,21 +25,6 @@ const SurfaceContainer = ({ scale, ticks, domains, marker, clickMarker }: any) =
             <Surface map={map} depth={depth} scale={scale} continousMarker={marker} clickMarker={clickMarker} positionToMarkerText={pToM} />
         </Suspense>
     )
-}
-
-async function imageDataFromSource(source: string, scale:number) {
-    const image = Object.assign(new Image(), { src: source });
-    await new Promise<void>(resolve => image.addEventListener('load', () => resolve()));
-    const context = Object.assign(document.createElement('canvas'), {
-        width: image.width,
-        height: image.height
-    }).getContext('2d');
-    if (context) {
-        context.imageSmoothingEnabled = false;
-        context.drawImage(image, 0, 0, image.width*scale, image.height*scale);
-        return context.getImageData(0, 0, image.width*scale, image.height*scale);
-    }
-    return null;
 }
 
 const App = () => {
