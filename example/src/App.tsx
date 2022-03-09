@@ -1,5 +1,5 @@
-import { Suspense, useState, useMemo, useEffect } from 'react'
-import { Object3D, Vector3, TextureLoader, DataTexture, Texture } from 'three'
+import { Suspense, useState, useMemo } from 'react'
+import { Object3D, Vector3, TextureLoader } from 'three'
 import { Canvas, useLoader } from '@react-three/fiber'
 import { Stats, OrbitControls, PerspectiveCamera } from '@react-three/drei'
 import { Grid, Surface } from 'surface-3d-viewer'
