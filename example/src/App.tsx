@@ -10,7 +10,7 @@ import GpuCheck from './GpuCheck'
 Object3D.DefaultUp.set(0, 0, 1)
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-const SurfaceContainer = ({ scale, ticks, domains, marker, clickMarker }: any) => {
+const SurfaceContainer = ({ scale, ticks, domains, marker, clickMarker, hitbox }: any) => {
 
     const map = useLoader(TextureLoader, './sinc.png')
     const depth = useLoader(TextureLoader, './sinc_gray.png')
@@ -22,7 +22,7 @@ const SurfaceContainer = ({ scale, ticks, domains, marker, clickMarker }: any) =
     return (
         <Suspense fallback={null}>
             <Grid scale={scale} domains={domains} ticks={ticks} />
-            <Surface map={map} depth={depth} scale={scale} continousMarker={marker} clickMarker={clickMarker} positionToMarkerText={pToM} />
+            <Surface map={map} depth={depth} scale={scale} continousMarker={marker} clickMarker={clickMarker} positionToMarkerText={pToM} showMarkerHitbox={hitbox} />
         </Suspense>
     )
 }
@@ -33,6 +33,7 @@ const App = () => {
     const [ticks, setT] = useState(15)
     const [marker, setMarker] = useState(false)
     const [clickMarker, setClickMarker] = useState(true)
+    const [hitbox, setHitbox] = useState(false)
 
     const domains = useMemo(
         () => ({
@@ -45,14 +46,14 @@ const App = () => {
 
     return (
         <div className="canvas">
-            <Control z={scale.z} setZ={(z: number) => set((v) => new Vector3(v.x, v.y, z))} x={x} setX={setX} t={ticks} setT={setT} c={marker} setC={setMarker} cm={clickMarker} setCm={setClickMarker} />
+            <Control z={scale.z} setZ={(z: number) => set((v) => new Vector3(v.x, v.y, z))} x={x} setX={setX} t={ticks} setT={setT} c={marker} setC={setMarker} cm={clickMarker} setCm={setClickMarker} hb={hitbox} setHb={setHitbox} />
 
             <Canvas frameloop="demand" linear flat >
                 <ambientLight intensity={1.0} />
                 <pointLight intensity={0.1} position={[0.5, 0.5, 2]} />
                 <pointLight intensity={0.1} position={[-0.5, -0.5, 2]} />
                 <Suspense fallback={null}>
-                    <SurfaceContainer scale={scale} ticks={ticks} domains={domains} marker={marker} clickMarker={clickMarker} />
+                    <SurfaceContainer scale={scale} ticks={ticks} domains={domains} marker={marker} clickMarker={clickMarker} hitbox={hitbox}  />
                 </Suspense>
                 <PerspectiveCamera position={[-0.5, -1.0, 1.5]} near={0.01} far={1000} makeDefault />
                 <OrbitControls target={[0.5, 0.5, 0]}/>

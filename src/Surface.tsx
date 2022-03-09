@@ -14,6 +14,7 @@ interface IProps {
     clickMarker?: boolean
     continousMarker?: boolean
     positionToMarkerText?: (x: number, y: number) => string
+    showMarkerHitbox?: boolean
 
     metalness?: number
     roughness?: number
@@ -31,50 +32,47 @@ const Surface = ({ map, depth, scale, ...props }: IProps) => {
     const [markerGeom, setMarkerGeom] = useState(new PlaneBufferGeometry())
     useEffect(
         () => {
-            let img = depth.image
-            if (!(depth instanceof DataTexture)) {
-                img = imageDataFromSource(depth.image, 1)
-                if(img == null) return
+            let image = depth.image
+            if (!(image instanceof ImageData)) {
+                image = imageDataFromSource(image, 1)
+                if(image == null) return
             }
-            update(img)
+
+            const t = 2000;
+            const n = image.width;
+            const m = image.height;
+    
+            let x = image.width;
+            let y = image.height;
+            if (x * y > t) {
+                const r = n / m;
+                y = Math.floor(Math.sqrt(t / r))
+                x = Math.floor(r * y);
+            }
+    
+            const geomn = new PlaneBufferGeometry(1, 1, x - 1, y - 1)
+            const pos = geomn.getAttribute("position");
+            const pa = pos.array as number[];
+    
+            for (let j = 0; j < y; j++) {
+                for (let i = 0; i < x; i++) {
+                    const di = Math.floor(i * (n - 1) / (x - 1))
+                    const dj = Math.floor(j * (m - 1) / (y - 1))
+                    const didx = dj * n + di;
+    
+                    let d = image.data[4 * didx + 1];
+                    if (isNaN(d))
+                        d = 0;
+    
+                    const idx = j * x + i;
+                    pa[3 * idx + 2] = d/255;
+                }
+            }
+    
+            setMarkerGeom(geomn);
 
         }, [depth]
     )
-
-    const update = (image: ImageData) => {
-        const t = 2000;
-        const n = image.width;
-        const m = image.height;
-
-        let x = image.width;
-        let y = image.height;
-        if (x * y > t) {
-            const r = n / m;
-            y = Math.floor(Math.sqrt(t / r))
-            x = Math.floor(r * y);
-        }
-
-        const geomn = new PlaneBufferGeometry(1, 1, x - 1, y - 1)
-        const pos = geomn.getAttribute("position");
-        const pa = pos.array as number[];
-
-        for (let j = 0; j < y; j++) {
-            for (let i = 0; i < x; i++) {
-                const di = Math.floor(i * (n - 1) / (x - 1))
-                const dj = Math.floor(j * (m - 1) / (y - 1))
-                const didx = dj * n + di;
-
-                let d = 0.3*(image.data[4 * didx] + image.data[4 * didx + 1] + image.data[4 * didx + 2]);
-                if (isNaN(d))
-                    d = 0;
-
-                const idx = j * x + i;
-                pa[3 * idx + 2] = d/255;
-            }
-        }
-
-        setMarkerGeom(geomn);
-    }
 
     const [continousMarkerPos, setContinousMarkerPos] = useState(new Vector3(0, 0, 0))
     const [clickMarkerPos, setClickMarkerPos] = useState(new Vector3(0, 0, 0))
@@ -142,8 +140,10 @@ const Surface = ({ map, depth, scale, ...props }: IProps) => {
     // Low resolution surface for raycasting
     const markerSurface = <mesh position={[0.5 * scale.x, 0.5 * scale.y, 0]} scale={scale} onPointerDown={onMouseDownClick} onPointerMove={onMouseHover} onPointerEnter={onMouseEnter} onPointerLeave={onMouseExit} geometry={markerGeom}>
         <meshBasicMaterial
-            transparent
-            opacity={0}
+            transparent = {!props.showMarkerHitbox}
+            opacity={props.showMarkerHitbox ? 1 : 0}
+            wireframe
+            color={"purple"}
             side={DoubleSide}
         />
     </mesh>
@@ -214,8 +214,6 @@ function setUpShader(shader: Shader, textureDepth: DataTexture | Texture) {
     )
 }
 
-
-
 interface IMarkerProps {
     position: Vector3
 
@@ -277,6 +275,7 @@ const Marker = ({ position, ...props }: IMarkerProps) => {
         </Suspense>
     )
 }
+
 interface IBillboard {
     position: Vector3,
     name: string
