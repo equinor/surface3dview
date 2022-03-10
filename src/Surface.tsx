@@ -30,21 +30,21 @@ interface IProps {
  * Scale ~ vector of how to scale the surface
  */
 const Surface = ({ map, depth, scale, ...props }: IProps) => {
-    const [markerGeom, setMarkerGeom] = useState(new PlaneBufferGeometry())
-
+    const [markerGeom, setMarkerGeom] = useState(new PlaneBufferGeometry(1,1,2,2))
+    
     useEffect(
         () => {
-            // depth.onUpdate = () => {
-            //     console.log("hello")
-            //     updateDepth(depth)
-            // }
+            const tmp = depth.onUpdate;
+            depth.onUpdate = () => {
+                updateDepth(depth)
+                if(tmp) tmp()
+            }
 
-            // console.log("ewwrewrewr")
             updateDepth(depth)
 
-            // return () => {
-            //     depth.onUpdate = () => { };
-            // };
+            return () => {
+                depth.onUpdate = tmp
+            };
         }, [depth]
     )
 
@@ -152,11 +152,10 @@ const Surface = ({ map, depth, scale, ...props }: IProps) => {
 
     // Normal surface using shader to set depth
     const surface = <mesh position={[0.5 * scale.x, 0.5 * scale.y, 0]} scale={scale}>
-        <planeBufferGeometry attach="geometry" args={[1, 1, depth.image.width - 1, depth.image.height - 1]} />
+        <planeBufferGeometry attach="geometry" args={[1, 1, Math.max(depth.image.width - 1,1), Math.max(depth.image.height - 1,1)]} />
         <meshStandardMaterial
-            // key={depth.uuid}
+            key={depth.uuid}
             map={map}
-            wireframe
             metalness={0.1}
             roughness={0.6}
             side={DoubleSide}
