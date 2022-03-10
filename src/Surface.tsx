@@ -1,7 +1,8 @@
 
 import { ThreeEvent, useFrame, useLoader, useThree } from '@react-three/fiber';
+import { type } from 'os';
 import { Suspense, useEffect, useRef, useState } from 'react';
-import { DoubleSide, DataTexture, Texture, Vector3, Vector2, Shape, BufferGeometry, PlaneBufferGeometry, CanvasTexture, LinearFilter, ClampToEdgeWrapping, SpriteMaterial, Sprite, ShapeGeometry, TextureLoader, ShapeBufferGeometry, Shader } from 'three'
+import { DoubleSide, DataTexture, Texture, Vector3, Vector2, Shape, BufferGeometry, PlaneBufferGeometry, CanvasTexture, LinearFilter, ClampToEdgeWrapping, SpriteMaterial, Sprite, ShapeGeometry, TextureLoader, ShapeBufferGeometry, Shader, MeshStandardMaterial, DepthTexture } from 'three'
 import { Html } from './Html'
 import { imageDataFromSource } from './utils'
 
@@ -29,50 +30,76 @@ interface IProps {
  * Scale ~ vector of how to scale the surface
  */
 const Surface = ({ map, depth, scale, ...props }: IProps) => {
-    const [markerGeom, setMarkerGeom] = useState(new PlaneBufferGeometry())
+    const [markerGeom, setMarkerGeom] = useState(new PlaneBufferGeometry(1,1,2,2))
+    
     useEffect(
         () => {
-            let image = depth.image
-            if (!(image instanceof ImageData)) {
-                image = imageDataFromSource(image, 1)
-                if(image == null) return
+            const tmp = depth.onUpdate;
+            depth.onUpdate = () => {
+                updateDepth(depth)
+                if(tmp) tmp()
             }
 
-            const t = 2000;
-            const n = image.width;
-            const m = image.height;
-    
-            let x = image.width;
-            let y = image.height;
-            if (x * y > t) {
-                const r = n / m;
-                y = Math.floor(Math.sqrt(t / r))
-                x = Math.floor(r * y);
-            }
-    
-            const geomn = new PlaneBufferGeometry(1, 1, x - 1, y - 1)
-            const pos = geomn.getAttribute("position");
-            const pa = pos.array as number[];
-    
-            for (let j = 0; j < y; j++) {
-                for (let i = 0; i < x; i++) {
-                    const di = Math.floor(i * (n - 1) / (x - 1))
-                    const dj = Math.floor(j * (m - 1) / (y - 1))
-                    const didx = dj * n + di;
-    
-                    let d = image.data[4 * didx + 1];
-                    if (isNaN(d))
-                        d = 0;
-    
-                    const idx = j * x + i;
-                    pa[3 * idx + 2] = d/255;
-                }
-            }
-    
-            setMarkerGeom(geomn);
+            updateDepth(depth)
 
+            return () => {
+                depth.onUpdate = tmp
+            };
         }, [depth]
     )
+
+    const updateDepth = (depth: Texture | DataTexture) => {
+        let image = depth.image
+
+        if(!(image instanceof ImageData))
+        {
+            try {
+                image = imageDataFromSource(image, 1)
+            } catch (error) {
+                image = null
+            }
+        }
+
+        if(image != null)
+        {
+            updateMarkerGeometry(image);
+        }
+    }
+
+    const updateMarkerGeometry = (image: ImageData) => {
+        const t = 2000;
+        const n = image.width;
+        const m = image.height;
+
+        let x = image.width;
+        let y = image.height;
+        if (x * y > t) {
+            const r = n / m;
+            y = Math.floor(Math.sqrt(t / r))
+            x = Math.floor(r * y);
+        }
+
+        const geomn = new PlaneBufferGeometry(1, 1, x - 1, y - 1)
+        const pos = geomn.getAttribute("position");
+        const pa = pos.array as number[];
+
+        for (let j = 0; j < y; j++) {
+            for (let i = 0; i < x; i++) {
+                const di = Math.floor(i * (n - 1) / (x - 1))
+                const dj = Math.floor(j * (m - 1) / (y - 1))
+                const didx = dj * n + di;
+
+                let d = image.data[4 * didx + 1];
+                if (isNaN(d))
+                    d = 0;
+
+                const idx = j * x + i;
+                pa[3 * idx + 2] = d / 255;
+            }
+        }
+
+        setMarkerGeom(geomn);
+    }
 
     const [continousMarkerPos, setContinousMarkerPos] = useState(new Vector3(0, 0, 0))
     const [clickMarkerPos, setClickMarkerPos] = useState(new Vector3(0, 0, 0))
@@ -125,8 +152,9 @@ const Surface = ({ map, depth, scale, ...props }: IProps) => {
 
     // Normal surface using shader to set depth
     const surface = <mesh position={[0.5 * scale.x, 0.5 * scale.y, 0]} scale={scale}>
-        <planeBufferGeometry attach="geometry" args={[1, 1, depth.image.width - 1, depth.image.height - 1]} />
+        <planeBufferGeometry attach="geometry" args={[1, 1, Math.max(depth.image.width - 1,1), Math.max(depth.image.height - 1,1)]} />
         <meshStandardMaterial
+            key={depth.uuid}
             map={map}
             metalness={0.1}
             roughness={0.6}
@@ -140,7 +168,7 @@ const Surface = ({ map, depth, scale, ...props }: IProps) => {
     // Low resolution surface for raycasting
     const markerSurface = <mesh position={[0.5 * scale.x, 0.5 * scale.y, 0]} scale={scale} onPointerDown={onMouseDownClick} onPointerMove={onMouseHover} onPointerEnter={onMouseEnter} onPointerLeave={onMouseExit} geometry={markerGeom}>
         <meshBasicMaterial
-            transparent = {!props.showMarkerHitbox}
+            transparent={!props.showMarkerHitbox}
             opacity={props.showMarkerHitbox ? 1 : 0}
             wireframe
             color={"purple"}
