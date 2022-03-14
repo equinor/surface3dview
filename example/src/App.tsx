@@ -2,7 +2,7 @@ import { Suspense, useState, useMemo, useEffect } from 'react'
 import { Object3D, Vector3, TextureLoader, DataTexture, Texture } from 'three'
 import { Canvas, useLoader, useThree } from '@react-three/fiber'
 import { Stats, OrbitControls, PerspectiveCamera } from '@react-three/drei'
-import { Grid, Surface } from 'surface-3d-viewer'
+import { Grid, Surface, MarkerSurface } from 'surface-3d-viewer'
 
 import Control from './Control'
 import GpuCheck from './GpuCheck'
@@ -62,7 +62,8 @@ const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarke
     return (
         <Suspense fallback={null}>
             <Grid scale={scale} domains={domains} ticks={ticks} />
-            <Surface map={map} depth={depth} scale={scale} continousMarker={marker} clickMarker={clickMarker} positionToMarkerText={pToM} showMarkerHitbox={hitbox} />
+            <Surface map={map} depth={depth} scale={scale}/>
+            <MarkerSurface depth={depth} scale={scale} continousMarker={marker} clickMarker={clickMarker} positionToMarkerText={pToM} showMarkerHitbox={hitbox}/>
         </Suspense>
     )
 }
@@ -125,7 +126,8 @@ const SurfaceContainerThreeUpdate = ({ scale, ticks, domains, marker, clickMarke
     return (
         <Suspense fallback={null}>
             <Grid scale={scale} domains={domains} ticks={ticks} />
-            <Surface map={map} depth={depth} scale={scale} continousMarker={marker} clickMarker={clickMarker} positionToMarkerText={pToM} showMarkerHitbox={hitbox} />
+            <Surface map={map} depth={depth} scale={scale}/>
+            <MarkerSurface depth={depth} scale={scale} continousMarker={marker} clickMarker={clickMarker} positionToMarkerText={pToM} showMarkerHitbox={hitbox}/>
         </Suspense>
     )
 }
