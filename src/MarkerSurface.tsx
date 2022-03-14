@@ -20,16 +20,15 @@ const MarkerSurface = ({ depth, scale, ...props }: IProps) => {
 
     useEffect(
         () => {
-            const tmp = depth.onUpdate;
             depth.onUpdate = () => {
                 updateDepth(depth)
-                if (tmp) tmp()
             }
 
             updateDepth(depth)
 
             return () => {
-                depth.onUpdate = tmp
+                //@ts-ignore
+                depth.onUpdate = null
             };
         }, [depth]
     )

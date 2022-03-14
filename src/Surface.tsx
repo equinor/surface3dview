@@ -23,6 +23,7 @@ const Surface = ({ map, depth, scale, ...props }: IProps) => {
             <planeBufferGeometry attach="geometry" args={[1, 1, depth.image.width + 1, depth.image.height + 1]} />
 
             <meshStandardMaterial
+                key={depth.uuid}
                 map={map}
                 metalness={0.1}
                 roughness={0.6}

@@ -1,6 +1,6 @@
 import { Suspense, useState, useMemo, useEffect } from 'react'
 import { Object3D, Vector3, TextureLoader, DataTexture, Texture } from 'three'
-import { Canvas, useLoader, useThree } from '@react-three/fiber'
+import { Canvas, invalidate, useLoader, useThree } from '@react-three/fiber'
 import { Stats, OrbitControls, PerspectiveCamera } from '@react-three/drei'
 import { Grid, Surface, MarkerSurface } from 'surface-3d-viewer'
 
@@ -9,7 +9,7 @@ import GpuCheck from './GpuCheck'
 
 Object3D.DefaultUp.set(0, 0, 1)
 
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+// @ts-ignore
 const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarker, hitbox, surf }: any) => {
     const [map, setMap] = useState<Texture | DataTexture>(new DataTexture())
     const [depth, setDepth] = useState<Texture | DataTexture>(new DataTexture())
@@ -23,7 +23,6 @@ const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarke
         if (surf === "main") {
             map1 = mainMap
             depth1 = mainDepth;
-            depth1.onUpdate = () => {console.log("Main React")}
         }
         else {
             const n = 5;
@@ -46,8 +45,6 @@ const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarke
             map1 = new DataTexture();
             map1.image = img;
             map1.needsUpdate = true;
-
-            depth1.onUpdate = () => {console.log("Test React")}
         }
         
         setMap(map1)
@@ -68,13 +65,12 @@ const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarke
     )
 }
 
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+// @ts-ignore
 const SurfaceContainerThreeUpdate = ({ scale, ticks, domains, marker, clickMarker, hitbox, surf }: any) => {
     const [map,] = useState<DataTexture>(new DataTexture())
     const [depth,] = useState<DataTexture>(new DataTexture())
     const { invalidate } = useThree()
 
-    depth.onUpdate = () => {console.log("Three")}
     useEffect(() => {
         if (surf === "main") {
             const n = 100;
@@ -160,6 +156,7 @@ const App = () => {
     else {
         container = <SurfaceContainerReactUpdate scale={scale} ticks={ticks} domains={domains} marker={marker} clickMarker={clickMarker} hitbox={hitbox} surf={surf} />
     }
+
     return (
         <div className="canvas">
             <Control z={scale.z} setZ={(z: number) => set((v) => new Vector3(v.x, v.y, z))} x={x} setX={setX} t={ticks} setT={setT} c={marker} setC={setMarker} cm={clickMarker} setCm={setClickMarker} hb={hitbox} setHb={setHitbox} surf={surf} setSurf={setSurf} update={update} setUpate={setUpdate} />
