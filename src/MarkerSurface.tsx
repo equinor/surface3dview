@@ -14,6 +14,13 @@ interface IProps {
     showMarkerHitbox?: boolean
 }
 
+/**
+ * MarkerSurface
+ * Surface to add marker support. Surface will be scaled down to ca 2000 faces such that the raycaster is faster.
+ *
+ * Depth ~ bump scale texture (gray scale, using the g channel)
+ * Scale ~ vector of how to scale the surface
+ */
 const MarkerSurface = ({ depth, scale, ...props }: IProps) => {
 
     const [markerGeom, setMarkerGeom] = useState(new PlaneBufferGeometry(1, 1, 2, 2))
@@ -200,13 +207,14 @@ const Marker = ({ position, ...props }: IMarkerProps) => {
 
     return (
         <Suspense fallback={null}>
-            <line_ key={line.current.uuid} geometry={line.current}  {...props}>
+            <line_ key={line.current.uuid} geometry={line.current} {...props}>
                 <meshBasicMaterial
                     attach="material"
                     color={'black'}
                     polygonOffset
                     polygonOffsetFactor={GRIDOffsetFactor}
                     polygonOffsetUnits={GRIDOffsetUnits}
+                    {...props}
                 />
             </line_>
 
