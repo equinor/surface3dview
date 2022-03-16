@@ -2,14 +2,14 @@ import { Suspense, useState, useMemo, useEffect } from 'react'
 import { Object3D, Vector3, TextureLoader, DataTexture, Texture } from 'three'
 import { Canvas, useLoader, useThree } from '@react-three/fiber'
 import { Stats, OrbitControls, PerspectiveCamera } from '@react-three/drei'
-import { Grid, Surface } from 'surface-3d-viewer'
+import { Grid, Surface, MarkerSurface } from 'surface-3d-viewer'
 
 import Control from './Control'
 import GpuCheck from './GpuCheck'
 
 Object3D.DefaultUp.set(0, 0, 1)
 
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+// @ts-ignore
 const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarker, hitbox, surf }: any) => {
     const [map, setMap] = useState<Texture | DataTexture>(new DataTexture())
     const [depth, setDepth] = useState<Texture | DataTexture>(new DataTexture())
@@ -18,36 +18,33 @@ const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarke
     const mainDepth = useLoader(TextureLoader, './sinc_gray.png')
 
     useEffect(() => {
-        let map1 = new Texture();
-        let depth1 = new Texture();
-        if (surf === "main") {
+        let map1 = new Texture()
+        let depth1 = new Texture()
+        if (surf === 'main') {
             map1 = mainMap
-            depth1 = mainDepth;
-            depth1.onUpdate = () => {console.log("Main React")}
+            depth1 = mainDepth
         }
         else {
-            const n = 5;
-            const m = 5;
-            const img = new ImageData(n, m);
+            const n = 5
+            const m = 5
+            const img = new ImageData(n, m)
             for (let i = 0; i < n; i++) {
                 for (let j = 0; j < m; j++) {
-                    const idx = i * m + j;
-                    img.data[4 * idx] = 100;
-                    img.data[4 * idx + 1] = 100;
-                    img.data[4 * idx + 2] = 100;
-                    img.data[4 * idx + 3] = 255;
+                    const idx = i * m + j
+                    img.data[4 * idx] = 100
+                    img.data[4 * idx + 1] = 100
+                    img.data[4 * idx + 2] = 100
+                    img.data[4 * idx + 3] = 255
                 }
             }
 
-            depth1 = new DataTexture();
-            depth1.image = img;
-            depth1.needsUpdate = true;
+            depth1 = new DataTexture()
+            depth1.image = img
+            depth1.needsUpdate = true
 
-            map1 = new DataTexture();
-            map1.image = img;
-            map1.needsUpdate = true;
-
-            depth1.onUpdate = () => {console.log("Test React")}
+            map1 = new DataTexture()
+            map1.image = img
+            map1.needsUpdate = true
         }
         
         setMap(map1)
@@ -62,57 +59,57 @@ const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarke
     return (
         <Suspense fallback={null}>
             <Grid scale={scale} domains={domains} ticks={ticks} />
-            <Surface map={map} depth={depth} scale={scale} continousMarker={marker} clickMarker={clickMarker} positionToMarkerText={pToM} showMarkerHitbox={hitbox} />
+            <Surface map={map} depth={depth} scale={scale}/>
+            <MarkerSurface depth={depth} scale={scale} continousMarker={marker} clickMarker={clickMarker} positionToMarkerText={pToM} showMarkerHitbox={hitbox}/>
         </Suspense>
     )
 }
 
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+// @ts-ignore
 const SurfaceContainerThreeUpdate = ({ scale, ticks, domains, marker, clickMarker, hitbox, surf }: any) => {
     const [map,] = useState<DataTexture>(new DataTexture())
     const [depth,] = useState<DataTexture>(new DataTexture())
     const { invalidate } = useThree()
 
-    depth.onUpdate = () => {console.log("Three")}
     useEffect(() => {
         if (surf === "main") {
-            const n = 100;
-            const m = 20;
-            const img = new ImageData(n, m);
+            const n = 100
+            const m = 20
+            const img = new ImageData(n, m)
             for (let i = 0; i < n; i++) {
                 for (let j = 0; j < m; j++) {
-                    const idx = i * m + j;
-                    img.data[4 * idx] = 200;
-                    img.data[4 * idx + 1] = 200;
-                    img.data[4 * idx + 2] = 200;
-                    img.data[4 * idx + 3] = 255;
+                    const idx = i * m + j
+                    img.data[4 * idx] = 200
+                    img.data[4 * idx + 1] = 200
+                    img.data[4 * idx + 2] = 200
+                    img.data[4 * idx + 3] = 255
                 }
             }
-            depth.image = img;
-            depth.needsUpdate = true;
+            depth.image = img
+            depth.needsUpdate = true
 
-            map.image = img;
-            map.needsUpdate = true;
+            map.image = img
+            map.needsUpdate = true
         }
         else {
-            const n = 5;
-            const m = 5;
-            const img = new ImageData(n, m);
+            const n = 5
+            const m = 5
+            const img = new ImageData(n, m)
             for (let i = 0; i < n; i++) {
                 for (let j = 0; j < m; j++) {
-                    const idx = i * m + j;
-                    img.data[4 * idx] = 100;
-                    img.data[4 * idx + 1] = 100;
-                    img.data[4 * idx + 2] = 100;
-                    img.data[4 * idx + 3] = 255;
+                    const idx = i * m + j
+                    img.data[4 * idx] = 100
+                    img.data[4 * idx + 1] = 100
+                    img.data[4 * idx + 2] = 100
+                    img.data[4 * idx + 3] = 255
                 }
             }
 
-            depth.image = img;
-            depth.needsUpdate = true;
+            depth.image = img
+            depth.needsUpdate = true
 
-            map.image = img;
-            map.needsUpdate = true;
+            map.image = img
+            map.needsUpdate = true
         }
         invalidate()
     }, [surf])
@@ -125,7 +122,8 @@ const SurfaceContainerThreeUpdate = ({ scale, ticks, domains, marker, clickMarke
     return (
         <Suspense fallback={null}>
             <Grid scale={scale} domains={domains} ticks={ticks} />
-            <Surface map={map} depth={depth} scale={scale} continousMarker={marker} clickMarker={clickMarker} positionToMarkerText={pToM} showMarkerHitbox={hitbox} />
+            <Surface map={map} depth={depth} scale={scale}/>
+            <MarkerSurface depth={depth} scale={scale} continousMarker={marker} clickMarker={clickMarker} positionToMarkerText={pToM} showMarkerHitbox={hitbox}/>
         </Suspense>
     )
 }
@@ -151,13 +149,14 @@ const App = () => {
         [x],
     )
 
-    let container = <></>;
+    let container = <></>
     if (update === "three") {
         container = <SurfaceContainerThreeUpdate scale={scale} ticks={ticks} domains={domains} marker={marker} clickMarker={clickMarker} hitbox={hitbox} surf={surf} />
     }
     else {
         container = <SurfaceContainerReactUpdate scale={scale} ticks={ticks} domains={domains} marker={marker} clickMarker={clickMarker} hitbox={hitbox} surf={surf} />
     }
+
     return (
         <div className="canvas">
             <Control z={scale.z} setZ={(z: number) => set((v) => new Vector3(v.x, v.y, z))} x={x} setX={setX} t={ticks} setT={setT} c={marker} setC={setMarker} cm={clickMarker} setCm={setClickMarker} hb={hitbox} setHb={setHitbox} surf={surf} setSurf={setSurf} update={update} setUpate={setUpdate} />
