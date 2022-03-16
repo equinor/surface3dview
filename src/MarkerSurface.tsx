@@ -1,7 +1,7 @@
 import { DoubleSide, DataTexture, Texture, Vector3, BufferGeometry, PlaneBufferGeometry } from 'three'
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react'
 import { imageDataFromSource } from './utils'
-import { ThreeEvent } from '@react-three/fiber';
+import { ThreeEvent } from '@react-three/fiber'
 import { Html } from './Html'
 
 interface IProps {
@@ -29,7 +29,7 @@ const MarkerSurface = ({ depth, scale, ...props }: IProps) => {
             return () => {
                 //@ts-ignore
                 depth.onUpdate = null
-            };
+            }
         }, [depth]
     )
 
@@ -45,60 +45,60 @@ const MarkerSurface = ({ depth, scale, ...props }: IProps) => {
         }
 
         if (image != null) {
-            updateMarkerGeometry(image, depth.flipY);
+            updateMarkerGeometry(image, depth.flipY)
         }
     }
 
     const updateMarkerGeometry = (image: ImageData, flipY: boolean) => {
-        const t = 2000;
-        const n = image.width;
-        const m = image.height;
+        const t = 2000
+        const n = image.width
+        const m = image.height
 
-        let x = image.width;
-        let y = image.height;
+        let x = image.width
+        let y = image.height
         if (x * y > t) {
-            const r = n / m;
+            const r = n / m
             y = Math.floor(Math.sqrt(t / r))
-            x = Math.floor(r * y);
+            x = Math.floor(r * y)
         }
 
         const geomn = new PlaneBufferGeometry(1, 1, x - 1, y - 1)
-        const pos = geomn.getAttribute("position");
-        const pa = pos.array as number[];
+        const pos = geomn.getAttribute("position")
+        const pa = pos.array as number[]
 
         for (let j = 0; j < y; j++) {
             for (let i = 0; i < x; i++) {
                 const di = Math.floor(i * (n - 1) / (x - 1))
                 const dj = Math.floor(j * (m - 1) / (y - 1))
-                const didx = dj * n + di;
+                const didx = dj * n + di
 
-                let d = image.data[4 * didx + 1];
+                let d = image.data[4 * didx + 1]
                 if (isNaN(d))
-                    d = 0;
+                    d = 0
 
-                const idx = j * x + i;
-                pa[3 * idx + 2] = d / 255;
+                const idx = j * x + i
+                pa[3 * idx + 2] = d / 255
             }
         }
 
-        setMarkerGeom(geomn);
+        setMarkerGeom(geomn)
     }
 
     const [continousMarkerPos, setContinousMarkerPos] = useState(new Vector3(0, 0, 0))
     const [clickMarkerPos, setClickMarkerPos] = useState(new Vector3(0, 0, 0))
-    const [renderContinousMarker, setRenderContinousMarker] = useState(false);
-    const [renderClickMarker, setRenderClickMarker] = useState(false);
+    const [renderContinousMarker, setRenderContinousMarker] = useState(false)
+    const [renderClickMarker, setRenderClickMarker] = useState(false)
 
-    const [mouseClicked, setMouseClicked] = useState(false);
-    const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | undefined>(undefined);
+    const [mouseClicked, setMouseClicked] = useState(false)
+    const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | undefined>(undefined)
 
-    const useContinousMarker = props.continousMarker;
-    const useClickMarker = props.clickMarker;
+    const useContinousMarker = props.continousMarker
+    const useClickMarker = props.clickMarker
 
     const handleMouseHover = (e: ThreeEvent<PointerEvent>) => {
         e.stopPropagation()
         setContinousMarkerPos(e.point)
-    };
+    }
 
     const handleMouseEnter = (e: ThreeEvent<PointerEvent>) => {
         e.stopPropagation()
@@ -116,22 +116,22 @@ const MarkerSurface = ({ depth, scale, ...props }: IProps) => {
         if (mouseClicked) {
             setClickMarkerPos(e.point)
             setRenderClickMarker(true)
-            if (timeoutId) clearTimeout(timeoutId);
+            if (timeoutId) clearTimeout(timeoutId)
             setMouseClicked(false)
         }
         else {
-            setMouseClicked(true);
+            setMouseClicked(true)
             // According to this it is not possible to fetch double click timing from the OS
             // https://stackoverflow.com/questions/8333764/can-i-query-detect-the-double-click-speed-for-a-webpage-user
-            setTimeoutId(setTimeout(() => setMouseClicked(false), 500)); // 0.5 s is default doubleclick time in windows
+            setTimeoutId(setTimeout(() => setMouseClicked(false), 500)) // 0.5 s is default doubleclick time in windows
         }
     }
 
-    const onMouseHover = useContinousMarker ? handleMouseHover : undefined;
-    const onMouseEnter = useContinousMarker ? handleMouseEnter : undefined;
-    const onMouseExit = useContinousMarker ? handleMouseExit : undefined;
+    const onMouseHover = useContinousMarker ? handleMouseHover : undefined
+    const onMouseEnter = useContinousMarker ? handleMouseEnter : undefined
+    const onMouseExit = useContinousMarker ? handleMouseExit : undefined
 
-    const onMouseDownClick = useClickMarker ? handleMouseDownClick : undefined;
+    const onMouseDownClick = useClickMarker ? handleMouseDownClick : undefined
 
 
     return (
@@ -164,7 +164,7 @@ interface IMarkerProps {
 const Marker = ({ position, ...props }: IMarkerProps) => {
 
     const [textPos, setTextPos] = useState(position)
-    const [textValue, setTextValue] = useState('');
+    const [textValue, setTextValue] = useState('')
     const line = useRef(new BufferGeometry().setFromPoints([position, position]))
 
     useEffect(
@@ -172,7 +172,7 @@ const Marker = ({ position, ...props }: IMarkerProps) => {
             const pos = line.current.getAttribute("position")
             const pa = pos.array as number[]
 
-            const z = position.z + Math.max((0.5 - position.z), 0.1);
+            const z = position.z + Math.max((0.5 - position.z), 0.1)
             setTextPos(new Vector3(position.x, position.y, z))
 
             pa[0] = position.x
@@ -183,7 +183,7 @@ const Marker = ({ position, ...props }: IMarkerProps) => {
 
             pa[2] = position.z
             pa[5] = z
-            pos.needsUpdate = true;
+            pos.needsUpdate = true
 
             let txt = ''
             if (props.positionToMarkerText) {
@@ -192,7 +192,7 @@ const Marker = ({ position, ...props }: IMarkerProps) => {
             else {
                 txt = (Math.round(position.z * 1000) / 1000).toString()
             }
-            setTextValue(txt);
+            setTextValue(txt)
         }, [position]
     )
 

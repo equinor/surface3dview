@@ -1,6 +1,6 @@
 import { Suspense, useState, useMemo, useEffect } from 'react'
 import { Object3D, Vector3, TextureLoader, DataTexture, Texture } from 'three'
-import { Canvas, invalidate, useLoader, useThree } from '@react-three/fiber'
+import { Canvas, useLoader, useThree } from '@react-three/fiber'
 import { Stats, OrbitControls, PerspectiveCamera } from '@react-three/drei'
 import { Grid, Surface, MarkerSurface } from 'surface-3d-viewer'
 
@@ -18,33 +18,33 @@ const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarke
     const mainDepth = useLoader(TextureLoader, './sinc_gray.png')
 
     useEffect(() => {
-        let map1 = new Texture();
-        let depth1 = new Texture();
-        if (surf === "main") {
+        let map1 = new Texture()
+        let depth1 = new Texture()
+        if (surf === 'main') {
             map1 = mainMap
-            depth1 = mainDepth;
+            depth1 = mainDepth
         }
         else {
-            const n = 5;
-            const m = 5;
-            const img = new ImageData(n, m);
+            const n = 5
+            const m = 5
+            const img = new ImageData(n, m)
             for (let i = 0; i < n; i++) {
                 for (let j = 0; j < m; j++) {
-                    const idx = i * m + j;
-                    img.data[4 * idx] = 100;
-                    img.data[4 * idx + 1] = 100;
-                    img.data[4 * idx + 2] = 100;
-                    img.data[4 * idx + 3] = 255;
+                    const idx = i * m + j
+                    img.data[4 * idx] = 100
+                    img.data[4 * idx + 1] = 100
+                    img.data[4 * idx + 2] = 100
+                    img.data[4 * idx + 3] = 255
                 }
             }
 
-            depth1 = new DataTexture();
-            depth1.image = img;
-            depth1.needsUpdate = true;
+            depth1 = new DataTexture()
+            depth1.image = img
+            depth1.needsUpdate = true
 
-            map1 = new DataTexture();
-            map1.image = img;
-            map1.needsUpdate = true;
+            map1 = new DataTexture()
+            map1.image = img
+            map1.needsUpdate = true
         }
         
         setMap(map1)
@@ -73,43 +73,43 @@ const SurfaceContainerThreeUpdate = ({ scale, ticks, domains, marker, clickMarke
 
     useEffect(() => {
         if (surf === "main") {
-            const n = 100;
-            const m = 20;
-            const img = new ImageData(n, m);
+            const n = 100
+            const m = 20
+            const img = new ImageData(n, m)
             for (let i = 0; i < n; i++) {
                 for (let j = 0; j < m; j++) {
-                    const idx = i * m + j;
-                    img.data[4 * idx] = 200;
-                    img.data[4 * idx + 1] = 200;
-                    img.data[4 * idx + 2] = 200;
-                    img.data[4 * idx + 3] = 255;
+                    const idx = i * m + j
+                    img.data[4 * idx] = 200
+                    img.data[4 * idx + 1] = 200
+                    img.data[4 * idx + 2] = 200
+                    img.data[4 * idx + 3] = 255
                 }
             }
-            depth.image = img;
-            depth.needsUpdate = true;
+            depth.image = img
+            depth.needsUpdate = true
 
-            map.image = img;
-            map.needsUpdate = true;
+            map.image = img
+            map.needsUpdate = true
         }
         else {
-            const n = 5;
-            const m = 5;
-            const img = new ImageData(n, m);
+            const n = 5
+            const m = 5
+            const img = new ImageData(n, m)
             for (let i = 0; i < n; i++) {
                 for (let j = 0; j < m; j++) {
-                    const idx = i * m + j;
-                    img.data[4 * idx] = 100;
-                    img.data[4 * idx + 1] = 100;
-                    img.data[4 * idx + 2] = 100;
-                    img.data[4 * idx + 3] = 255;
+                    const idx = i * m + j
+                    img.data[4 * idx] = 100
+                    img.data[4 * idx + 1] = 100
+                    img.data[4 * idx + 2] = 100
+                    img.data[4 * idx + 3] = 255
                 }
             }
 
-            depth.image = img;
-            depth.needsUpdate = true;
+            depth.image = img
+            depth.needsUpdate = true
 
-            map.image = img;
-            map.needsUpdate = true;
+            map.image = img
+            map.needsUpdate = true
         }
         invalidate()
     }, [surf])
@@ -149,7 +149,7 @@ const App = () => {
         [x],
     )
 
-    let container = <></>;
+    let container = <></>
     if (update === "three") {
         container = <SurfaceContainerThreeUpdate scale={scale} ticks={ticks} domains={domains} marker={marker} clickMarker={clickMarker} hitbox={hitbox} surf={surf} />
     }
