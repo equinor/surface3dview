@@ -10,7 +10,7 @@ interface IProps {
 
     clickMarker?: boolean
     continousMarker?: boolean
-    positionToMarkerText?: (x: number, y: number) => string
+    positionToMarkerText?: (x: number, y: number) => JSX.Element
     showMarkerHitbox?: boolean
 }
 
@@ -163,7 +163,7 @@ const MarkerSurface = ({ depth, scale, ...props }: IProps) => {
 interface IMarkerProps {
     position: Vector3
 
-    positionToMarkerText?: (x: number, y: number) => string
+    positionToMarkerText?: (x: number, y: number) => JSX.Element
     onCloseMarkerClick?: React.MouseEventHandler<HTMLButtonElement>
     visible?: boolean
 }
@@ -171,7 +171,7 @@ interface IMarkerProps {
 const Marker = ({ position, ...props }: IMarkerProps) => {
 
     const [textPos, setTextPos] = useState(position)
-    const [textValue, setTextValue] = useState('')
+    const [textValue, setTextValue] = useState(<></>)
     const line = useRef(new BufferGeometry().setFromPoints([position, position]))
 
     useEffect(
@@ -192,14 +192,14 @@ const Marker = ({ position, ...props }: IMarkerProps) => {
             pa[5] = z
             pos.needsUpdate = true
 
-            let txt = ''
+            let content = <></>
             if (props.positionToMarkerText) {
-                txt = props.positionToMarkerText(position.x, position.y)
+                content = props.positionToMarkerText(position.x, position.y)
             }
             else {
-                txt = (Math.round(position.z * 1000) / 1000).toString()
+                content = <div> {(Math.round(position.z * 1000) / 1000).toString()}</div>
             }
-            setTextValue(txt)
+            setTextValue(content)
         }, [position]
     )
 
@@ -218,31 +218,31 @@ const Marker = ({ position, ...props }: IMarkerProps) => {
                 />
             </line_>
 
-            <Billboard name={textValue.toString()} position={textPos} onCloseButtonClick={props.onCloseMarkerClick} {...props} />
+            <Billboard content={textValue} position={textPos} onCloseButtonClick={props.onCloseMarkerClick} {...props} />
         </Suspense>
     )
 }
 
 interface IBillboard {
     position: Vector3,
-    name: string
+    content: JSX.Element
 
     visible?: boolean
     onCloseButtonClick?: React.MouseEventHandler<HTMLButtonElement>
 }
 
-const Billboard = ({ position, name, ...props }: IBillboard) => {
+const Billboard = ({ position, content, ...props }: IBillboard) => {
     // Cound not get visible prop on Html to work.
     if (!props.visible) {
         return (<></>)
     }
     return (
         <Html position={position} center>
-            <div style={{ background: 'white', width: '300px', height: '60px', boxShadow: '0px 0px 5px 0px black', borderRadius: "20px", display: 'grid', gridTemplateColumns: '20px auto 20px', gridTemplateRows: '20px auto 20px' }}>
+            <div style={{ background: 'white', minWidth: '60px', minHeight: '60px', boxShadow: '0px 0px 5px 0px black', borderRadius: "20px", display: 'grid', gridTemplateColumns: '20px auto 20px', gridTemplateRows: '20px auto 20px' }}>
                 <div style={{ gridColumn: '2', gridRow: '2' }}>
-                    {name}
+                    {content}
                 </div>
-                <button style={{ gridColumn: '3', gridRow: '0' }} type='button' onClick={props.onCloseButtonClick}>
+                <button style={{ gridColumn: '3', gridRow: '1' }} type='button' onClick={props.onCloseButtonClick}>
                 </button>
             </div>
         </Html>

@@ -52,9 +52,16 @@ const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarke
     }, [surf])
 
 
-    const pToM = (x: number, y: number) => `This is a function x = ${Math.round(x * 1000) / 1000} y = ${Math.round(y * 1000) / 1000}`
+    // const pToM = (x: number, y: number) => `This is a function x = ${Math.round(x * 1000) / 1000} y = ${Math.round(y * 1000) / 1000}`
 
-    // const test = (x:number,y:number) => <div style={{background:'black'}}>This is a function x = {Math.round(x * 1000) / 1000} y = {Math.round(y * 1000) / 1000}</div>
+    const pToM = (x:number,y:number) =>
+    {
+        return(
+            <ul style={{listStyleType: "none", padding: 0}}>
+                <li>This is a function x = {Math.round(x * 1000) / 1000} y = {Math.round(y * 1000) / 1000}</li>
+            </ul>
+            )
+    }
 
     return (
         <Suspense fallback={null}>
@@ -115,9 +122,8 @@ const SurfaceContainerThreeUpdate = ({ scale, ticks, domains, marker, clickMarke
     }, [surf])
 
 
-    const pToM = (x: number, y: number) => `This is a function x = ${Math.round(x * 1000) / 1000} y = ${Math.round(y * 1000) / 1000}`
-
-    // const test = (x:number,y:number) => <div style={{background:'black'}}>This is a function x = {Math.round(x * 1000) / 1000} y = {Math.round(y * 1000) / 1000}</div>
+    // const pToM = (x: number, y: number) => `This is a function x = ${Math.round(x * 1000) / 1000} y = ${Math.round(y * 1000) / 1000}`
+    const pToM = (x:number,y:number) => <div style={{background:'black', color:'white', width:"300px", height:"70px"}}><div>This is a function x = {Math.round(x * 1000) / 1000} y = {Math.round(y * 1000) / 1000}</div><br/><div>Im a fly!!</div></div>
 
     return (
         <Suspense fallback={null}>
