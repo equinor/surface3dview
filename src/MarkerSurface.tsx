@@ -9,8 +9,13 @@ interface IProps {
     scale: Vector3
 
     clickMarker?: boolean
+    onClickPositionChanged?: (v:Vector3) => void
+    clickContent?:JSX.Element
+
     continousMarker?: boolean
-    positionToMarkerText?: (x: number, y: number) => JSX.Element
+    onContinousPositionChanged?: (v:Vector3) => void
+    continousContent?:JSX.Element
+
     showMarkerHitbox?: boolean
 }
 
@@ -134,12 +139,26 @@ const MarkerSurface = ({ depth, scale, ...props }: IProps) => {
         }
     }
 
+    useEffect(() => {
+        if (props.onContinousPositionChanged)
+            props.onContinousPositionChanged(continousMarkerPos)
+    }, [continousMarkerPos]
+    )
+
+    useEffect(() => {
+        if (props.onClickPositionChanged)
+            props.onClickPositionChanged(clickMarkerPos)
+    }, [clickMarkerPos]
+    )
+
     const onMouseHover = useContinousMarker ? handleMouseHover : undefined
     const onMouseEnter = useContinousMarker ? handleMouseEnter : undefined
     const onMouseExit = useContinousMarker ? handleMouseExit : undefined
 
     const onMouseDownClick = useClickMarker ? handleMouseDownClick : undefined
 
+    const continousContent = props.continousContent ? props.continousContent : <></>
+    const clickContent = props.clickContent ? props.clickContent : <></>
 
     return (
         <Suspense fallback={null}>
@@ -152,8 +171,8 @@ const MarkerSurface = ({ depth, scale, ...props }: IProps) => {
                     side={DoubleSide}
                 />
             </mesh>
-            <Marker position={continousMarkerPos} visible={useContinousMarker && renderContinousMarker} positionToMarkerText={props.positionToMarkerText} />
-            <Marker position={clickMarkerPos} visible={useClickMarker && renderClickMarker} positionToMarkerText={props.positionToMarkerText} onCloseMarkerClick={(v) => setRenderClickMarker(false)} />
+            <Marker content={continousContent} position={continousMarkerPos} visible={useContinousMarker && renderContinousMarker}/>
+            <Marker content={clickContent} position={clickMarkerPos} visible={useClickMarker && renderClickMarker} onCloseMarkerClick={(v) => setRenderClickMarker(false)} />
         </Suspense>
 
     )
@@ -162,16 +181,15 @@ const MarkerSurface = ({ depth, scale, ...props }: IProps) => {
 
 interface IMarkerProps {
     position: Vector3
+    content: JSX.Element
 
-    positionToMarkerText?: (x: number, y: number) => JSX.Element
     onCloseMarkerClick?: React.MouseEventHandler<HTMLButtonElement>
     visible?: boolean
 }
 
-const Marker = ({ position, ...props }: IMarkerProps) => {
+const Marker = ({ position, content, ...props }: IMarkerProps) => {
 
     const [textPos, setTextPos] = useState(position)
-    const [textValue, setTextValue] = useState(<></>)
     const line = useRef(new BufferGeometry().setFromPoints([position, position]))
 
     useEffect(
@@ -192,14 +210,6 @@ const Marker = ({ position, ...props }: IMarkerProps) => {
             pa[5] = z
             pos.needsUpdate = true
 
-            let content = <></>
-            if (props.positionToMarkerText) {
-                content = props.positionToMarkerText(position.x, position.y)
-            }
-            else {
-                content = <div> {(Math.round(position.z * 1000) / 1000).toString()}</div>
-            }
-            setTextValue(content)
         }, [position]
     )
 
@@ -218,7 +228,7 @@ const Marker = ({ position, ...props }: IMarkerProps) => {
                 />
             </line_>
 
-            <Billboard content={textValue} position={textPos} onCloseButtonClick={props.onCloseMarkerClick} {...props} />
+            <Billboard content={content} position={textPos} onCloseButtonClick={props.onCloseMarkerClick} {...props} />
         </Suspense>
     )
 }

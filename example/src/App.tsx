@@ -13,6 +13,8 @@ Object3D.DefaultUp.set(0, 0, 1)
 const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarker, hitbox, surf }: any) => {
     const [map, setMap] = useState<Texture | DataTexture>(new DataTexture())
     const [depth, setDepth] = useState<Texture | DataTexture>(new DataTexture())
+    const [clickPos, setClickPos] = useState<Vector3>(new Vector3())
+    const [contPos, setContPos] = useState<Vector3>(new Vector3())
 
     const mainMap = useLoader(TextureLoader, './sinc.png')
     const mainDepth = useLoader(TextureLoader, './sinc_gray.png')
@@ -46,28 +48,22 @@ const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarke
             map1.image = img
             map1.needsUpdate = true
         }
-        
+
         setMap(map1)
         setDepth(depth1)
     }, [surf])
 
 
-    // const pToM = (x: number, y: number) => `This is a function x = ${Math.round(x * 1000) / 1000} y = ${Math.round(y * 1000) / 1000}`
+    const clickContent = <div style={{ background: 'black', color: 'white', width: "300px", height: "70px" }}><div>This is a function x = {Math.round(clickPos.x * 1000) / 1000} y = {Math.round(clickPos.y * 1000) / 1000}</div><br /><div>Three style</div></div>
+    const contContent = <div style={{ background: 'black', color: 'white', width: "300px", height: "70px" }}><div>This is a function x = {Math.round(contPos.x * 1000) / 1000} y = {Math.round(contPos.y * 1000) / 1000}</div><br /><div>Three style</div></div>
 
-    const pToM = (x:number,y:number) =>
-    {
-        return(
-            <ul style={{listStyleType: "none", padding: 0}}>
-                <li>This is a function x = {Math.round(x * 1000) / 1000} y = {Math.round(y * 1000) / 1000}</li>
-            </ul>
-            )
-    }
+
 
     return (
         <Suspense fallback={null}>
             <Grid scale={scale} domains={domains} ticks={ticks} />
-            <Surface map={map} depth={depth} scale={scale}/>
-            <MarkerSurface depth={depth} scale={scale} continousMarker={marker} clickMarker={clickMarker} positionToMarkerText={pToM} showMarkerHitbox={hitbox}/>
+            <Surface map={map} depth={depth} scale={scale} />
+            <MarkerSurface depth={depth} scale={scale} continousMarker={marker} clickMarker={clickMarker} showMarkerHitbox={hitbox} clickContent={clickContent} continousContent={contContent} onClickPositionChanged={setClickPos} onContinousPositionChanged={setContPos} />
         </Suspense>
     )
 }
@@ -76,6 +72,9 @@ const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarke
 const SurfaceContainerThreeUpdate = ({ scale, ticks, domains, marker, clickMarker, hitbox, surf }: any) => {
     const [map,] = useState<DataTexture>(new DataTexture())
     const [depth,] = useState<DataTexture>(new DataTexture())
+    const [clickPos, setClickPos] = useState<Vector3>(new Vector3())
+    const [contPos, setContPos] = useState<Vector3>(new Vector3())
+
     const { invalidate } = useThree()
 
     useEffect(() => {
@@ -122,14 +121,15 @@ const SurfaceContainerThreeUpdate = ({ scale, ticks, domains, marker, clickMarke
     }, [surf])
 
 
-    // const pToM = (x: number, y: number) => `This is a function x = ${Math.round(x * 1000) / 1000} y = ${Math.round(y * 1000) / 1000}`
-    const pToM = (x:number,y:number) => <div style={{background:'black', color:'white', width:"300px", height:"70px"}}><div>This is a function x = {Math.round(x * 1000) / 1000} y = {Math.round(y * 1000) / 1000}</div><br/><div>Im a fly!!</div></div>
-
+    const clickContent = <ul style={{ listStyleType: "none", padding: 0 }}>
+        <li>Testing lists x = {Math.round(clickPos.x * 1000) / 1000} y = {Math.round(clickPos.y * 1000) / 1000}</li>
+    </ul>
+    const contContent = <div style={{ background: 'black', color: 'white', width: "300px", height: "70px" }}><div>This is a function x = {Math.round(contPos.x * 1000) / 1000} y = {Math.round(contPos.y * 1000) / 1000}</div><br /><div>React style updating</div></div>
     return (
         <Suspense fallback={null}>
             <Grid scale={scale} domains={domains} ticks={ticks} />
-            <Surface map={map} depth={depth} scale={scale}/>
-            <MarkerSurface depth={depth} scale={scale} continousMarker={marker} clickMarker={clickMarker} positionToMarkerText={pToM} showMarkerHitbox={hitbox}/>
+            <Surface map={map} depth={depth} scale={scale} />
+            <MarkerSurface depth={depth} scale={scale} continousMarker={marker} clickMarker={clickMarker} showMarkerHitbox={hitbox} onClickPositionChanged={setClickPos} clickContent={clickContent} onContinousPositionChanged={setContPos} continousContent={contContent} />
         </Suspense>
     )
 }
