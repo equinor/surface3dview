@@ -274,11 +274,11 @@ const Cross = ({ size, ...props }: ICrossProps) => {
         <line x1={bl[0]} y1={bl[1]}
             x2={tr[0]} y2={tr[1]}
             stroke={color}
-            stroke-width={2} />
+            strokeWidth={2} />
         <line x1={tl[0]} y1={tl[1]}
             x2={br[0]} y2={br[1]}
             stroke={color}
-            stroke-width={2} />
+            strokeWidth={2} />
     </svg>
 }
 
