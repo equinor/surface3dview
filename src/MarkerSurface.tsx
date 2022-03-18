@@ -248,8 +248,8 @@ const Billboard = ({ position, content, ...props }: IBillboard) => {
     }
     return (
         <Html position={position} center>
-            <div style={{ background: 'white', minWidth: '60px', minHeight: '60px', boxShadow: '0px 0px 5px 0px black', borderRadius: "20px", display: 'grid', gridTemplateColumns: '20px auto 20px', gridTemplateRows: '20px auto 20px' }}>
-                <div style={{ gridColumn: '2', gridRow: '2' }}>
+            <div style={{ background: 'white', minWidth: '60px', minHeight: '60px', boxShadow: '0px 0px 5px 0px black', borderRadius: "15px", display: 'grid', gridTemplateColumns: '10px auto 10px', gridTemplateRows: '10px auto 10px' }}>
+                <div style={{ gridColumn: '2', gridRow: '1/4'}}>
                     {content}
                 </div>
                 <button style={{ gridColumn: '3', gridRow: '1' }} type='button' onClick={props.onCloseButtonClick}>
