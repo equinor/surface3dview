@@ -9,12 +9,12 @@ interface IProps {
     scale: Vector3
 
     clickMarker?: boolean
-    onClickPositionChanged?: (v:Vector3) => void
-    clickContent?:JSX.Element
+    onClickPositionChanged?: (v: Vector3) => void
+    clickContent?: JSX.Element
 
     continousMarker?: boolean
-    onContinousPositionChanged?: (v:Vector3) => void
-    continousContent?:JSX.Element
+    onContinousPositionChanged?: (v: Vector3) => void
+    continousContent?: JSX.Element
 
     showMarkerHitbox?: boolean
 }
@@ -171,7 +171,7 @@ const MarkerSurface = ({ depth, scale, ...props }: IProps) => {
                     side={DoubleSide}
                 />
             </mesh>
-            <Marker content={continousContent} position={continousMarkerPos} visible={useContinousMarker && renderContinousMarker}/>
+            <Marker content={continousContent} position={continousMarkerPos} visible={useContinousMarker && renderContinousMarker} />
             <Marker content={clickContent} position={clickMarkerPos} visible={useClickMarker && renderClickMarker} onCloseMarkerClick={(v) => setRenderClickMarker(false)} />
         </Suspense>
 
@@ -183,7 +183,7 @@ interface IMarkerProps {
     position: Vector3
     content: JSX.Element
 
-    onCloseMarkerClick?: React.MouseEventHandler<HTMLButtonElement>
+    onCloseMarkerClick?: React.MouseEventHandler<SVGSVGElement>
     visible?: boolean
 }
 
@@ -238,7 +238,7 @@ interface IBillboard {
     content: JSX.Element
 
     visible?: boolean
-    onCloseButtonClick?: React.MouseEventHandler<HTMLButtonElement>
+    onCloseButtonClick?: React.MouseEventHandler<SVGSVGElement>
 }
 
 const Billboard = ({ position, content, ...props }: IBillboard) => {
@@ -248,15 +248,38 @@ const Billboard = ({ position, content, ...props }: IBillboard) => {
     }
     return (
         <Html position={position} center>
-            <div style={{ background: 'white', minWidth: '60px', minHeight: '60px', boxShadow: '0px 0px 5px 0px black', borderRadius: "15px", display: 'grid', gridTemplateColumns: '10px auto 10px', gridTemplateRows: '10px auto 10px' }}>
-                <div style={{ gridColumn: '2', gridRow: '1/4'}}>
+            <div style={{ background: 'white', display: 'grid', gridTemplateColumns: '10px auto 13px', gridTemplateRows: '13px auto 10px', minWidth: '30px', minHeight: '30px', boxShadow: '0px 0px 5px 0px black', borderRadius: "10px" }}>
+                <div style={{ gridColumn: '2', gridRow: '1/span 3' }}>
                     {content}
                 </div>
-                <button style={{ gridColumn: '3', gridRow: '1' }} type='button' onClick={props.onCloseButtonClick}>
-                </button>
+                <Cross size={10} onClick={props.onCloseButtonClick} style={{ gridColumn: '3', gridRow: '1', alignSelf: 'end', justifySelf: 'left' }} />
             </div>
         </Html>
     )
+}
+
+interface ICrossProps extends React.SVGProps<SVGSVGElement> {
+    size: number,
+}
+
+const Cross = ({ size, ...props }: ICrossProps) => {
+    const [hover, setHover] = useState<boolean>(false)
+    const color = hover ? "grey" : "black"
+    const s = size
+    const tl = [1, s - 1]
+    const tr = [s - 1, s - 1]
+    const bl = [1, 1]
+    const br = [s - 1, 1]
+    return <svg width={s} height={s} onMouseOver={() => setHover(true)} onMouseOut={() => setHover(false)} {...props}>
+        <line x1={bl[0]} y1={bl[1]}
+            x2={tr[0]} y2={tr[1]}
+            stroke={color}
+            stroke-width={2} />
+        <line x1={tl[0]} y1={tl[1]}
+            x2={br[0]} y2={br[1]}
+            stroke={color}
+            stroke-width={2} />
+    </svg>
 }
 
 const GRIDOffsetFactor = 10

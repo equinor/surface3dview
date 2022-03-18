@@ -54,8 +54,8 @@ const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarke
     }, [surf])
 
 
-    const clickContent = <div style={{ background: 'black', color: 'white', width: "300px", height: "70px" }}><div>This is a function x = {Math.round(clickPos.x * 1000) / 1000} y = {Math.round(clickPos.y * 1000) / 1000}</div><br /><div>Three style</div></div>
-    const contContent = <div style={{ background: 'black', color: 'white', width: "300px", height: "70px" }}><div>This is a function x = {Math.round(contPos.x * 1000) / 1000} y = {Math.round(contPos.y * 1000) / 1000}</div><br /><div>Three style</div></div>
+    const clickContent = <div style={{ width: "300px", height: "70px" }}><div>This is a function x = {Math.round(clickPos.x * 1000) / 1000} y = {Math.round(clickPos.y * 1000) / 1000}</div><br /><div>React style</div></div>
+    const contContent = <div style={{ width: "300px", height: "70px" }}><div>This is a function x = {Math.round(contPos.x * 1000) / 1000} y = {Math.round(contPos.y * 1000) / 1000}</div><br /><div>React style</div></div>
 
 
 
