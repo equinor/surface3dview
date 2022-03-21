@@ -27,23 +27,20 @@ interface IProps {
  * Scale ~ vector of how to scale the surface
  */
 const MarkerSurface = ({ depth, scale, ...props }: IProps) => {
-
     const [markerGeom, setMarkerGeom] = useState(new PlaneBufferGeometry(1, 1, 2, 2))
 
-    useEffect(
-        () => {
-            depth.onUpdate = () => {
-                updateDepth(depth)
-            }
-
+    useEffect(() => {
+        depth.onUpdate = () => {
             updateDepth(depth)
+        }
 
-            return () => {
-                //@ts-ignore
-                depth.onUpdate = null
-            }
-        }, [depth]
-    )
+        updateDepth(depth)
+
+        return () => {
+            //@ts-ignore
+            depth.onUpdate = null
+        }
+    }, [depth])
 
     const updateDepth = (depth: Texture | DataTexture) => {
         let image = depth.image
@@ -75,18 +72,17 @@ const MarkerSurface = ({ depth, scale, ...props }: IProps) => {
         }
 
         const geomn = new PlaneBufferGeometry(1, 1, x - 1, y - 1)
-        const pos = geomn.getAttribute("position")
+        const pos = geomn.getAttribute('position')
         const pa = pos.array as number[]
 
         for (let j = 0; j < y; j++) {
             for (let i = 0; i < x; i++) {
-                const di = Math.floor(i * (n - 1) / (x - 1))
-                const dj = Math.floor(j * (m - 1) / (y - 1))
+                const di = Math.floor((i * (n - 1)) / (x - 1))
+                const dj = Math.floor((j * (m - 1)) / (y - 1))
                 const didx = dj * n + di
 
                 let d = image.data[4 * didx + 1]
-                if (isNaN(d))
-                    d = 0
+                if (isNaN(d)) d = 0
 
                 const idx = j * x + i
                 pa[3 * idx + 2] = d / 255
@@ -130,8 +126,7 @@ const MarkerSurface = ({ depth, scale, ...props }: IProps) => {
             setRenderClickMarker(true)
             if (timeoutId) clearTimeout(timeoutId)
             setMouseClicked(false)
-        }
-        else {
+        } else {
             setMouseClicked(true)
             // According to this it is not possible to fetch double click timing from the OS
             // https://stackoverflow.com/questions/8333764/can-i-query-detect-the-double-click-speed-for-a-webpage-user
@@ -140,16 +135,12 @@ const MarkerSurface = ({ depth, scale, ...props }: IProps) => {
     }
 
     useEffect(() => {
-        if (props.onContinousPositionChanged)
-            props.onContinousPositionChanged(continousMarkerPos)
-    }, [continousMarkerPos]
-    )
+        if (props.onContinousPositionChanged) props.onContinousPositionChanged(continousMarkerPos)
+    }, [continousMarkerPos])
 
     useEffect(() => {
-        if (props.onClickPositionChanged)
-            props.onClickPositionChanged(clickMarkerPos)
-    }, [clickMarkerPos]
-    )
+        if (props.onClickPositionChanged) props.onClickPositionChanged(clickMarkerPos)
+    }, [clickMarkerPos])
 
     const onMouseHover = useContinousMarker ? handleMouseHover : undefined
     const onMouseEnter = useContinousMarker ? handleMouseEnter : undefined
@@ -162,22 +153,33 @@ const MarkerSurface = ({ depth, scale, ...props }: IProps) => {
 
     return (
         <Suspense fallback={null}>
-            <mesh position={[0.5 * scale.x, 0.5 * scale.y, 0]} scale={scale} onPointerDown={onMouseDownClick} onPointerMove={onMouseHover} onPointerEnter={onMouseEnter} onPointerLeave={onMouseExit} geometry={markerGeom}>
+            <mesh
+                position={[0.5 * scale.x, 0.5 * scale.y, 0]}
+                scale={scale}
+                onPointerDown={onMouseDownClick}
+                onPointerMove={onMouseHover}
+                onPointerEnter={onMouseEnter}
+                onPointerLeave={onMouseExit}
+                geometry={markerGeom}
+            >
                 <meshBasicMaterial
                     transparent={!props.showMarkerHitbox}
                     opacity={props.showMarkerHitbox ? 1 : 0}
                     wireframe
-                    color={"purple"}
+                    color={'purple'}
                     side={DoubleSide}
                 />
             </mesh>
             <Marker content={continousContent} position={continousMarkerPos} visible={useContinousMarker && renderContinousMarker} />
-            <Marker content={clickContent} position={clickMarkerPos} visible={useClickMarker && renderClickMarker} onCloseMarkerClick={(v) => setRenderClickMarker(false)} />
+            <Marker
+                content={clickContent}
+                position={clickMarkerPos}
+                visible={useClickMarker && renderClickMarker}
+                onCloseMarkerClick={(v) => setRenderClickMarker(false)}
+            />
         </Suspense>
-
     )
 }
-
 
 interface IMarkerProps {
     position: Vector3
@@ -188,32 +190,26 @@ interface IMarkerProps {
 }
 
 const Marker = ({ position, content, ...props }: IMarkerProps) => {
-
     const [textPos, setTextPos] = useState(position)
     const line = useRef(new BufferGeometry().setFromPoints([position, position]))
 
-    useEffect(
-        () => {
-            const pos = line.current.getAttribute("position")
-            const pa = pos.array as number[]
+    useEffect(() => {
+        const pos = line.current.getAttribute('position')
+        const pa = pos.array as number[]
 
-            const z = position.z + Math.max((0.5 - position.z), 0.1)
-            setTextPos(new Vector3(position.x, position.y, z))
+        const z = position.z + Math.max(0.5 - position.z, 0.1)
+        setTextPos(new Vector3(position.x, position.y, z))
 
-            pa[0] = position.x
-            pa[3] = position.x
+        pa[0] = position.x
+        pa[3] = position.x
 
-            pa[1] = position.y
-            pa[4] = position.y
+        pa[1] = position.y
+        pa[4] = position.y
 
-            pa[2] = position.z
-            pa[5] = z
-            pos.needsUpdate = true
-
-        }, [position]
-    )
-
-
+        pa[2] = position.z
+        pa[5] = z
+        pos.needsUpdate = true
+    }, [position])
 
     return (
         <Suspense fallback={null}>
@@ -234,7 +230,7 @@ const Marker = ({ position, content, ...props }: IMarkerProps) => {
 }
 
 interface IBillboard {
-    position: Vector3,
+    position: Vector3
     content: JSX.Element
 
     visible?: boolean
@@ -244,42 +240,51 @@ interface IBillboard {
 const Billboard = ({ position, content, ...props }: IBillboard) => {
     // Cound not get visible prop on Html to work.
     if (!props.visible) {
-        return (<></>)
+        return <></>
     }
     return (
         <Html position={position} center>
-            <div style={{ background: 'white', display: 'grid', gridTemplateColumns: '10px auto 13px', gridTemplateRows: '13px auto 10px', minWidth: '30px', minHeight: '30px', boxShadow: '0px 0px 5px 0px black', borderRadius: "10px" }}>
-                <div style={{ gridColumn: '2', gridRow: '1/span 3' }}>
-                    {content}
-                </div>
-                <Cross size={10} onClick={props.onCloseButtonClick} style={{ gridColumn: '3', gridRow: '1', alignSelf: 'end', justifySelf: 'left' }} />
+            <div
+                style={{
+                    background: 'white',
+                    display: 'grid',
+                    gridTemplateColumns: '10px auto 13px',
+                    gridTemplateRows: '13px auto 10px',
+                    minWidth: '30px',
+                    minHeight: '30px',
+                    boxShadow: '0px 0px 5px 0px black',
+                    borderRadius: '10px',
+                }}
+            >
+                <div style={{ gridColumn: '2', gridRow: '1/span 3' }}>{content}</div>
+                <Cross
+                    size={10}
+                    onClick={props.onCloseButtonClick}
+                    style={{ gridColumn: '3', gridRow: '1', alignSelf: 'end', justifySelf: 'left' }}
+                />
             </div>
         </Html>
     )
 }
 
 interface ICrossProps extends React.SVGProps<SVGSVGElement> {
-    size: number,
+    size: number
 }
 
 const Cross = ({ size, ...props }: ICrossProps) => {
     const [hover, setHover] = useState<boolean>(false)
-    const color = hover ? "grey" : "black"
+    const color = hover ? 'grey' : 'black'
     const s = size
     const tl = [1, s - 1]
     const tr = [s - 1, s - 1]
     const bl = [1, 1]
     const br = [s - 1, 1]
-    return <svg width={s} height={s} onMouseOver={() => setHover(true)} onMouseOut={() => setHover(false)} {...props}>
-        <line x1={bl[0]} y1={bl[1]}
-            x2={tr[0]} y2={tr[1]}
-            stroke={color}
-            strokeWidth={2} />
-        <line x1={tl[0]} y1={tl[1]}
-            x2={br[0]} y2={br[1]}
-            stroke={color}
-            strokeWidth={2} />
-    </svg>
+    return (
+        <svg width={s} height={s} onMouseOver={() => setHover(true)} onMouseOut={() => setHover(false)} {...props}>
+            <line x1={bl[0]} y1={bl[1]} x2={tr[0]} y2={tr[1]} stroke={color} strokeWidth={2} />
+            <line x1={tl[0]} y1={tl[1]} x2={br[0]} y2={br[1]} stroke={color} strokeWidth={2} />
+        </svg>
+    )
 }
 
 const GRIDOffsetFactor = 10

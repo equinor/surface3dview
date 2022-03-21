@@ -9,7 +9,7 @@ import GpuCheck from './GpuCheck'
 
 Object3D.DefaultUp.set(0, 0, 1)
 
-// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarker, hitbox, surf }: any) => {
     const [map, setMap] = useState<Texture | DataTexture>(new DataTexture())
     const [depth, setDepth] = useState<Texture | DataTexture>(new DataTexture())
@@ -25,8 +25,7 @@ const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarke
         if (surf === 'main') {
             map1 = mainMap
             depth1 = mainDepth
-        }
-        else {
+        } else {
             const n = 5
             const m = 5
             const img = new ImageData(n, m)
@@ -53,32 +52,55 @@ const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarke
         setDepth(depth1)
     }, [surf])
 
-
-    const clickContent = <div style={{ width: "300px", height: "70px" }}><div>This is a function x = {Math.round(clickPos.x * 1000) / 1000} y = {Math.round(clickPos.y * 1000) / 1000}</div><br /><div>React style</div></div>
-    const contContent = <div style={{ width: "300px", height: "70px" }}><div>This is a function x = {Math.round(contPos.x * 1000) / 1000} y = {Math.round(contPos.y * 1000) / 1000}</div><br /><div>React style</div></div>
-
-
+    const clickContent = (
+        <div style={{ width: '300px', height: '70px' }}>
+            <div>
+                This is a function x = {Math.round(clickPos.x * 1000) / 1000} y = {Math.round(clickPos.y * 1000) / 1000}
+            </div>
+            <br />
+            <div>React style</div>
+        </div>
+    )
+    const contContent = (
+        <div style={{ width: '300px', height: '70px' }}>
+            <div>
+                This is a function x = {Math.round(contPos.x * 1000) / 1000} y = {Math.round(contPos.y * 1000) / 1000}
+            </div>
+            <br />
+            <div>React style</div>
+        </div>
+    )
 
     return (
         <Suspense fallback={null}>
             <Grid scale={scale} domains={domains} ticks={ticks} />
             <Surface map={map} depth={depth} scale={scale} />
-            <MarkerSurface depth={depth} scale={scale} continousMarker={marker} clickMarker={clickMarker} showMarkerHitbox={hitbox} clickContent={clickContent} continousContent={contContent} onClickPositionChanged={setClickPos} onContinousPositionChanged={setContPos} />
+            <MarkerSurface
+                depth={depth}
+                scale={scale}
+                continousMarker={marker}
+                clickMarker={clickMarker}
+                showMarkerHitbox={hitbox}
+                clickContent={clickContent}
+                continousContent={contContent}
+                onClickPositionChanged={setClickPos}
+                onContinousPositionChanged={setContPos}
+            />
         </Suspense>
     )
 }
 
-// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const SurfaceContainerThreeUpdate = ({ scale, ticks, domains, marker, clickMarker, hitbox, surf }: any) => {
-    const [map,] = useState<DataTexture>(new DataTexture())
-    const [depth,] = useState<DataTexture>(new DataTexture())
+    const [map] = useState<DataTexture>(new DataTexture())
+    const [depth] = useState<DataTexture>(new DataTexture())
     const [clickPos, setClickPos] = useState<Vector3>(new Vector3())
     const [contPos, setContPos] = useState<Vector3>(new Vector3())
 
     const { invalidate } = useThree()
 
     useEffect(() => {
-        if (surf === "main") {
+        if (surf === 'main') {
             const n = 100
             const m = 20
             const img = new ImageData(n, m)
@@ -96,8 +118,7 @@ const SurfaceContainerThreeUpdate = ({ scale, ticks, domains, marker, clickMarke
 
             map.image = img
             map.needsUpdate = true
-        }
-        else {
+        } else {
             const n = 5
             const m = 5
             const img = new ImageData(n, m)
@@ -120,21 +141,40 @@ const SurfaceContainerThreeUpdate = ({ scale, ticks, domains, marker, clickMarke
         invalidate()
     }, [surf])
 
-
-    const clickContent = <ul style={{ listStyleType: "none", padding: 0 }}>
-        <li>Testing lists x = {Math.round(clickPos.x * 1000) / 1000} y = {Math.round(clickPos.y * 1000) / 1000}</li>
-    </ul>
-    const contContent = <div style={{ background: 'black', color: 'white', width: "300px", height: "70px" }}><div>This is a function x = {Math.round(contPos.x * 1000) / 1000} y = {Math.round(contPos.y * 1000) / 1000}</div><br /><div>React style updating</div></div>
+    const clickContent = (
+        <ul style={{ listStyleType: 'none', padding: 0 }}>
+            <li>
+                Testing lists x = {Math.round(clickPos.x * 1000) / 1000} y = {Math.round(clickPos.y * 1000) / 1000}
+            </li>
+        </ul>
+    )
+    const contContent = (
+        <div style={{ background: 'black', color: 'white', width: '300px', height: '70px' }}>
+            <div>
+                This is a function x = {Math.round(contPos.x * 1000) / 1000} y = {Math.round(contPos.y * 1000) / 1000}
+            </div>
+            <br />
+            <div>React style updating</div>
+        </div>
+    )
     return (
         <Suspense fallback={null}>
             <Grid scale={scale} domains={domains} ticks={ticks} />
             <Surface map={map} depth={depth} scale={scale} />
-            <MarkerSurface depth={depth} scale={scale} continousMarker={marker} clickMarker={clickMarker} showMarkerHitbox={hitbox} onClickPositionChanged={setClickPos} clickContent={clickContent} onContinousPositionChanged={setContPos} continousContent={contContent} />
+            <MarkerSurface
+                depth={depth}
+                scale={scale}
+                continousMarker={marker}
+                clickMarker={clickMarker}
+                showMarkerHitbox={hitbox}
+                onClickPositionChanged={setClickPos}
+                clickContent={clickContent}
+                onContinousPositionChanged={setContPos}
+                continousContent={contContent}
+            />
         </Suspense>
     )
 }
-
-
 
 const App = () => {
     const [scale, set] = useState(new Vector3(1, 1, 0.2))
@@ -143,8 +183,8 @@ const App = () => {
     const [marker, setMarker] = useState(false)
     const [clickMarker, setClickMarker] = useState(true)
     const [hitbox, setHitbox] = useState(false)
-    const [surf, setSurf] = useState<"main" | "test">("main")
-    const [update, setUpdate] = useState<"react" | "three">("react")
+    const [surf, setSurf] = useState<'main' | 'test'>('main')
+    const [update, setUpdate] = useState<'react' | 'three'>('react')
 
     const domains = useMemo(
         () => ({
@@ -156,24 +196,58 @@ const App = () => {
     )
 
     let container = <></>
-    if (update === "three") {
-        container = <SurfaceContainerThreeUpdate scale={scale} ticks={ticks} domains={domains} marker={marker} clickMarker={clickMarker} hitbox={hitbox} surf={surf} />
-    }
-    else {
-        container = <SurfaceContainerReactUpdate scale={scale} ticks={ticks} domains={domains} marker={marker} clickMarker={clickMarker} hitbox={hitbox} surf={surf} />
+    if (update === 'three') {
+        container = (
+            <SurfaceContainerThreeUpdate
+                scale={scale}
+                ticks={ticks}
+                domains={domains}
+                marker={marker}
+                clickMarker={clickMarker}
+                hitbox={hitbox}
+                surf={surf}
+            />
+        )
+    } else {
+        container = (
+            <SurfaceContainerReactUpdate
+                scale={scale}
+                ticks={ticks}
+                domains={domains}
+                marker={marker}
+                clickMarker={clickMarker}
+                hitbox={hitbox}
+                surf={surf}
+            />
+        )
     }
 
     return (
         <div className="canvas">
-            <Control z={scale.z} setZ={(z: number) => set((v) => new Vector3(v.x, v.y, z))} x={x} setX={setX} t={ticks} setT={setT} c={marker} setC={setMarker} cm={clickMarker} setCm={setClickMarker} hb={hitbox} setHb={setHitbox} surf={surf} setSurf={setSurf} update={update} setUpate={setUpdate} />
+            <Control
+                z={scale.z}
+                setZ={(z: number) => set((v) => new Vector3(v.x, v.y, z))}
+                x={x}
+                setX={setX}
+                t={ticks}
+                setT={setT}
+                c={marker}
+                setC={setMarker}
+                cm={clickMarker}
+                setCm={setClickMarker}
+                hb={hitbox}
+                setHb={setHitbox}
+                surf={surf}
+                setSurf={setSurf}
+                update={update}
+                setUpate={setUpdate}
+            />
 
-            <Canvas frameloop="demand" linear flat >
+            <Canvas frameloop="demand" linear flat>
                 <ambientLight intensity={1.0} />
                 <pointLight intensity={0.1} position={[0.5, 0.5, 2]} />
                 <pointLight intensity={0.1} position={[-0.5, -0.5, 2]} />
-                <Suspense fallback={null}>
-                    {container}
-                </Suspense>
+                <Suspense fallback={null}>{container}</Suspense>
                 <PerspectiveCamera position={[-0.5, -1.0, 1.5]} near={0.01} far={1000} makeDefault />
                 <OrbitControls target={[0.5, 0.5, 0]} />
                 {process.env.NODE_ENV === 'development' && <Stats />}

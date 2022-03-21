@@ -199,7 +199,7 @@ function useFadeIn(p: Vector3): [Vector3, number] {
         requestRef.current = requestAnimationFrame(animate)
 
         return () => cancelAnimationFrame(requestRef.current as number)
-    }, [p.x, p.y, p.z]); // eslint-disable-line
+    }, [p.x, p.y, p.z]) // eslint-disable-line
 
     return [position, opacity]
 }
@@ -342,7 +342,7 @@ const LabelsZ = ({ sX, sY, sZ, pZX, pYZ, ticks, style }: ILabelY) => {
             setLabelZ(pYZ.clone().add(sY))
             setTangetZ(sY)
         }
-    }, [sX, sY, pYZ, pZX] ) // eslint-disable-line
+    }, [sX, sY, pYZ, pZX]) // eslint-disable-line
 
     return <Labels position={labelZ} v={sZ} ticks={ticks} tangent={tagentZ} style={style} />
 }
