@@ -6,6 +6,7 @@ import { Grid, Surface, MarkerSurface } from 'surface-3d-viewer'
 
 import Control from './Control'
 import GpuCheck from './GpuCheck'
+import { scaleBand } from 'd3-scale'
 
 Object3D.DefaultUp.set(0, 0, 1)
 
@@ -73,11 +74,13 @@ const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarke
 
     return (
         <Suspense fallback={null}>
-            <Grid scale={scale} domains={domains} ticks={ticks} />
+            <Grid scale={new Vector3(scale.x,scale.y, scale.z*1.5)} domains={domains} ticks={ticks} />
+            <Surface map={map} depth={depth} scale={scale} position={new Vector3(0.5*scale.x,0.5*scale.y,0.5*scale.z)} />
             <Surface map={map} depth={depth} scale={scale} />
             <MarkerSurface
                 depth={depth}
                 scale={scale}
+                position={new Vector3(0.5*scale.x,0.5*scale.y,0.5*scale.z)}
                 continousMarker={marker}
                 clickMarker={clickMarker}
                 showMarkerHitbox={hitbox}
@@ -85,6 +88,13 @@ const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarke
                 continousContent={contContent}
                 onClickPositionChanged={setClickPos}
                 onContinousPositionChanged={setContPos}
+            />
+            <MarkerSurface
+                depth={depth}
+                scale={scale}
+                clickMarker={true}
+                showMarkerHitbox={hitbox}
+                clickContent={<div>Test</div>}
             />
         </Suspense>
     )
@@ -160,7 +170,7 @@ const SurfaceContainerThreeUpdate = ({ scale, ticks, domains, marker, clickMarke
     return (
         <Suspense fallback={null}>
             <Grid scale={scale} domains={domains} ticks={ticks} />
-            <Surface map={map} depth={depth} scale={scale} />
+            <Surface map={map} depth={depth} scale={scale}/>
             <MarkerSurface
                 depth={depth}
                 scale={scale}

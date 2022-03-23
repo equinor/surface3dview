@@ -4,7 +4,8 @@ interface IProps {
     map: DataTexture | Texture
     depth: DataTexture | Texture
     scale: Vector3
-
+    
+    position?: Vector3
     metalness?: number
     roughness?: number
     flatShading?: boolean
@@ -17,9 +18,10 @@ interface IProps {
  * Depth ~ bump scale texture (gray scale)
  * Scale ~ vector of how to scale the surface
  */
-const Surface = ({ map, depth, scale, ...props }: IProps) => {
+const Surface = ({ map, depth, scale, position, ...props }: IProps) => {
+    const p = position ? position : new Vector3(0.5*scale.x,0.5*scale.y, 0);
     return (
-        <mesh position={[0.5 * scale.x, 0.5 * scale.y, 0]} scale={scale}>
+        <mesh position={p} scale={scale}>
             <planeBufferGeometry attach="geometry" args={[1, 1, depth.image.width + 1, depth.image.height + 1]} />
 
             <meshStandardMaterial
