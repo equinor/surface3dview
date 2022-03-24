@@ -2,13 +2,12 @@ import { Suspense, useEffect, useState } from 'react'
 import { Vector3 } from 'three'
 import Surface from './Surface'
 import Grid from './Grid'
-import{Map, Depth, Domain} from './sharedTypes'
+import { Map, Depth, Domain } from './sharedTypes'
 
-import {mapping, lerp, dist, union} from './utils'
-
+import { mapping, lerp, dist, union } from './utils'
 
 export type SurfaceItem = { map: Map; depth: Depth; domain: Domain }
-export type Axis = 'equal' | 'xyequal' | 'uniform';
+export type Axis = 'equal' | 'xyequal' | 'uniform'
 
 interface IProps {
     scale: Vector3
@@ -67,20 +66,20 @@ const MultiSurfaceContainer = ({ scale, axis, surfaces }: IProps) => {
         <Suspense fallback={null}>
             <Grid domains={globalDomain} scale={globalScale} />
             {surfaces.map((x, idx) => {
-                return <SurfaceGlobalDomain key={idx} surface={x} globalDomain={globalDomain} globalScale={globalScale} />
+                return <GlobalSurface key={idx} surface={x} globalDomain={globalDomain} globalScale={globalScale} />
             })}
         </Suspense>
     )
 }
 
-interface ISurfaceGlobalDomainProps {
+interface IGlobalSurfaceProps {
     surface: SurfaceItem
     globalDomain: Domain
     globalScale: Vector3
 
     key: number
 }
-const SurfaceGlobalDomain = ({ surface, globalDomain, globalScale }: ISurfaceGlobalDomainProps) => {
+const GlobalSurface = ({ surface, globalDomain, globalScale }: IGlobalSurfaceProps) => {
     // Map domain coordinates to plotting coordinates
     const fx = mapping(globalDomain.x, [0, globalScale.x])
     const fy = mapping(globalDomain.y, [0, globalScale.y])
@@ -98,7 +97,5 @@ const SurfaceGlobalDomain = ({ surface, globalDomain, globalScale }: ISurfaceGlo
 
     return <Surface map={surface.map} depth={surface.depth} scale={s} position={p} />
 }
-
-
 
 export default MultiSurfaceContainer
