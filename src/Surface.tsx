@@ -1,8 +1,9 @@
 import { DoubleSide, DataTexture, Texture, Vector3, Shader } from 'three'
+import {Map, Depth} from './sharedTypes'
 
 interface IProps {
-    map: DataTexture | Texture
-    depth: DataTexture | Texture
+    map: Map
+    depth: Depth
     scale: Vector3
     
     position?: Vector3

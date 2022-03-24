@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Vector3, BufferGeometry, Line } from 'three'
 import { useThree, useFrame, ReactThreeFiber, extend } from '@react-three/fiber'
 import { scaleLinear } from 'd3-scale'
+import {Domain} from './sharedTypes'
 
 import { Text } from './Text'
 
@@ -35,7 +36,7 @@ const GRIDOffsetUnits = 1
 
 interface IGridLines {
     scale: Vector3
-    domains: { [xyz in 'x' | 'y' | 'z']: [number, number] | number[] }
+    domains: Domain
 
     ticks?: number
     lineStyle?: { color: React.CSSProperties['color'] }
