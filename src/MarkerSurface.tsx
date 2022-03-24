@@ -8,6 +8,8 @@ interface IProps {
     depth: DataTexture | Texture
     scale: Vector3
 
+    position?:Vector3
+
     clickMarker?: boolean
     onClickPositionChanged?: (v: Vector3) => void
     clickContent?: JSX.Element
@@ -26,7 +28,7 @@ interface IProps {
  * Depth ~ bump scale texture (gray scale, using the g channel)
  * Scale ~ vector of how to scale the surface
  */
-const MarkerSurface = ({ depth, scale, ...props }: IProps) => {
+const MarkerSurface = ({ depth, scale, position, ...props }: IProps) => {
     const [markerGeom, setMarkerGeom] = useState(new PlaneBufferGeometry(1, 1, 2, 2))
 
     useEffect(() => {
@@ -151,10 +153,12 @@ const MarkerSurface = ({ depth, scale, ...props }: IProps) => {
     const continousContent = props.continousContent ? props.continousContent : <></>
     const clickContent = props.clickContent ? props.clickContent : <></>
 
+    const p = position ? position : new Vector3(0.5*scale.x,0.5*scale.y, 0);
+    
     return (
         <Suspense fallback={null}>
             <mesh
-                position={[0.5 * scale.x, 0.5 * scale.y, 0]}
+                position={p}
                 scale={scale}
                 onPointerDown={onMouseDownClick}
                 onPointerMove={onMouseHover}

@@ -60,6 +60,17 @@ const Controller = ({ z, setZ, x, setX, t, setT, c, setC, cm, setCm, hb, setHb, 
                 />
                 Three update
             </label>
+            <label>
+                <input
+                    type="radio"
+                    checked={update === 'multi'}
+                    onChange={() => {
+                        setUpate('multi')
+                    }}
+                />
+                Multiple surf
+            </label>
+            
             <br />
             <label>
                 <input

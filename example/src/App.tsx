@@ -2,12 +2,51 @@ import { Suspense, useState, useMemo, useEffect } from 'react'
 import { Object3D, Vector3, TextureLoader, DataTexture, Texture } from 'three'
 import { Canvas, useLoader, useThree } from '@react-three/fiber'
 import { Stats, OrbitControls, PerspectiveCamera } from '@react-three/drei'
-import { Grid, Surface, MarkerSurface } from 'surface-3d-viewer'
+import { Grid, Surface, MarkerSurface, MultiSurfaceContainer } from 'surface-3d-viewer'
 
 import Control from './Control'
 import GpuCheck from './GpuCheck'
 
 Object3D.DefaultUp.set(0, 0, 1)
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const SurfaceMultiContainerTest = ({ scale }: any) => {
+    const [surf, setSurf] = useState([])
+    useEffect(() => {
+        const surfData = []
+        const map1 = useLoader(TextureLoader, './sinc.png')
+        const depth1 = useLoader(TextureLoader, './sinc_gray.png')
+
+        surfData.push({ map: map1, depth: depth1, domain: { x: [-200, 800], y: [-200, 200], z: [1200, 2000] } })
+
+        const n = 5
+        const m = 5
+        const img = new ImageData(n, m)
+        for (let i = 0; i < n; i++) {
+            for (let j = 0; j < m; j++) {
+                const idx = i * m + j
+                img.data[4 * idx] = 100
+                img.data[4 * idx + 1] = 100
+                img.data[4 * idx + 2] = 100
+                img.data[4 * idx + 3] = 255
+            }
+        }
+
+        const depth2 = new DataTexture()
+        depth2.image = img
+        depth2.needsUpdate = true
+
+        const map2 = new DataTexture()
+        map2.image = img
+        map2.needsUpdate = true
+
+        surfData.push({ map: map2, depth: depth2, domain: { x: [200, 400], y: [-500, 0], z: [1000, 3000] } })
+        // @ts-ignore
+        setSurf(surfData)
+    }, [])
+
+    return <MultiSurfaceContainer scale={scale} axis={'xyequal'} surfaces={surf}/>
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarker, hitbox, surf }: any) => {
@@ -73,11 +112,12 @@ const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarke
 
     return (
         <Suspense fallback={null}>
-            <Grid scale={scale} domains={domains} ticks={ticks} />
+            <Grid scale={new Vector3(scale.x, scale.y, scale.z * 1.5)} domains={domains} ticks={ticks} />
             <Surface map={map} depth={depth} scale={scale} />
             <MarkerSurface
                 depth={depth}
                 scale={scale}
+                position={new Vector3(0.5 * scale.x, 0.5 * scale.y, 0.5 * scale.z)}
                 continousMarker={marker}
                 clickMarker={clickMarker}
                 showMarkerHitbox={hitbox}
@@ -208,7 +248,7 @@ const App = () => {
                 surf={surf}
             />
         )
-    } else {
+    } else if (update === 'react') {
         container = (
             <SurfaceContainerReactUpdate
                 scale={scale}
@@ -220,6 +260,8 @@ const App = () => {
                 surf={surf}
             />
         )
+    } else {
+        container = <SurfaceMultiContainerTest scale={scale} />
     }
 
     return (

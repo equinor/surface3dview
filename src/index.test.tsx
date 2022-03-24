@@ -1,4 +1,4 @@
-import { Grid, Surface, MarkerSurface } from '.'
+import { Grid, Surface, MarkerSurface, MultiSurfaceContainer } from '.'
 
 describe('Grid', () => {
     it('is truthy', () => {
@@ -15,5 +15,11 @@ describe('Surface', () => {
 describe('MarkerSurface', () => {
     it('is truthy', () => {
         expect(MarkerSurface).toBeTruthy()
+    })
+})
+
+describe('MultiSurfaceContainer', () => {
+    it('is truthy', () => {
+        expect(MultiSurfaceContainer).toBeTruthy()
     })
 })
