@@ -1,7 +1,7 @@
 import { DoubleSide, DataTexture, Texture, Vector3, BufferGeometry, PlaneBufferGeometry } from 'three'
 import { Suspense, useEffect, useRef, useState } from 'react'
 import { imageDataFromSource } from './utils'
-import { ThreeEvent } from '@react-three/fiber'
+import { ThreeEvent, useThree } from '@react-three/fiber'
 import { Html } from './Html'
 
 interface IProps {
@@ -195,13 +195,54 @@ interface IMarkerProps {
 
 const Marker = ({ position, content, ...props }: IMarkerProps) => {
     const [textPos, setTextPos] = useState(position)
+    const {camera} = useThree();
     const line = useRef(new BufferGeometry().setFromPoints([position, position]))
 
     useEffect(() => {
         const pos = line.current.getAttribute('position')
         const pa = pos.array as number[]
+        
+        const screenTarget = 0.7;
+        const t1 = 0;
+        const t2 = 0.5;
+        const t3 = 1;
+        const p1w = position.clone();
+        const p2w = p1w.clone().add(new Vector3(0,0,t2));
+        const p3w = p1w.clone().add(new Vector3(0,0,t3));
 
-        const z = position.z + Math.max(0.5 - position.z, 0.1)
+        const p1c = p1w.clone().project(camera);
+        const p2c = p2w.clone().project(camera);
+        const p3c = p3w.clone().project(camera);
+        camera.getWorldPosition
+
+        const p1y = p1c.y;
+        const p2y = p2c.y;
+        const p3y = p3c.y;
+
+        // // t is length along line in world space (z coordinate along stick)
+        // // t1,t2,t3 are t values giving screen y values p1y, p2y, p3y.
+        // const t =-((((p3y-p2y)*t2+(p1y-p3y)*t1)*t3+(p2y-p1y)*t1*t2)*screenTarget+((p1y*p2y-p1y*p3y)*t2+(p2y*p3y-p1y*p2y)*t1)*t3+
+        // (p1y-p2y)*p3y*t1*t2)/(((p2y-p1y)*t3+(p1y-p3y)*t2+(p3y-p2y)*t1)*screenTarget+(p1y-p2y)*p3y*t3+(p2y*p3y-p1y*p2y)*t2+
+        // (p1y*p2y-p1y*p3y)*t1)
+
+        // @ts-ignore
+        const projT = (target, x1,x2,x3) => {return -((((x3-x2)*t2+(x1-x3)*t1)*t3+(x2-x1)*t1*t2)*target+((x1*x2-x1*x3)*t2+(x2*x3-x1*x2)*t1)*t3+
+            (x1-x2)*x3*t1*t2)/(((x2-x1)*t3+(x1-x3)*t2+(x3-x2)*t1)*target+(x1-x2)*x3*t3+(x2*x3-x1*x2)*t2+
+            (x1*x2-x1*x3)*t1)}
+
+        const ty = projT(screenTarget,p1c.y,p2c.y,p3c.y);
+        const txmin = projT(-1,p1c.x,p2c.x,p3c.x);
+        const txmax = projT(1,p1c.x,p2c.x,p3c.x);
+
+        console.log(ty);
+        console.log(txmin)
+        console.log(txmax)
+
+        const tx = Math.max(txmax,txmin);
+        const t = Math.min(ty, tx);
+        console.log(t);
+
+        const z = position.z + Math.max(t,0);
         setTextPos(new Vector3(position.x, position.y, z))
 
         pa[0] = position.x

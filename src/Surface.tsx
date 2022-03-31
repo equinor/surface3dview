@@ -23,7 +23,7 @@ const Surface = ({ map, depth, scale, position, ...props }: IProps) => {
     const p = position ? position : new Vector3(0.5*scale.x,0.5*scale.y, 0);
     return (
         <mesh position={p} scale={scale}>
-            <planeBufferGeometry attach="geometry" args={[1, 1, depth.image.width + 1, depth.image.height + 1]} />
+            <planeBufferGeometry attach="geometry" args={[1, 1, depth.image.width+1, depth.image.height+1]} />
 
             <meshStandardMaterial
                 key={depth.uuid}

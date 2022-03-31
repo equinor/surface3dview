@@ -6,6 +6,7 @@ import { Grid, Surface, MarkerSurface, MultiSurfaceContainer } from 'surface-3d-
 
 import Control from './Control'
 import GpuCheck from './GpuCheck'
+import { randInt } from 'three/src/math/MathUtils'
 
 Object3D.DefaultUp.set(0, 0, 1)
 
@@ -112,12 +113,11 @@ const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarke
 
     return (
         <Suspense fallback={null}>
-            <Grid scale={new Vector3(scale.x, scale.y, scale.z * 1.5)} domains={domains} ticks={ticks} />
+            <Grid scale={scale} domains={domains} ticks={ticks} />
             <Surface map={map} depth={depth} scale={scale} />
             <MarkerSurface
                 depth={depth}
                 scale={scale}
-                position={new Vector3(0.5 * scale.x, 0.5 * scale.y, 0.5 * scale.z)}
                 continousMarker={marker}
                 clickMarker={clickMarker}
                 showMarkerHitbox={hitbox}
@@ -141,9 +141,10 @@ const SurfaceContainerThreeUpdate = ({ scale, ticks, domains, marker, clickMarke
 
     useEffect(() => {
         if (surf === 'main') {
-            const n = 100
-            const m = 20
+            const n = 30
+            const m = 50
             const img = new ImageData(n, m)
+            const img1 = new ImageData(n, m)
             for (let i = 0; i < n; i++) {
                 for (let j = 0; j < m; j++) {
                     const idx = i * m + j
@@ -151,12 +152,16 @@ const SurfaceContainerThreeUpdate = ({ scale, ticks, domains, marker, clickMarke
                     img.data[4 * idx + 1] = 200
                     img.data[4 * idx + 2] = 200
                     img.data[4 * idx + 3] = 255
+                    img1.data[4 * idx] = idx == (n/2)*(m/2) ? 0 : 255 
+                    img1.data[4 * idx+1] = 0
+                    img1.data[4 * idx+2] = 0
+                    img1.data[4 * idx+3] = 255
                 }
             }
             depth.image = img
             depth.needsUpdate = true
 
-            map.image = img
+            map.image = img1
             map.needsUpdate = true
         } else {
             const n = 5
