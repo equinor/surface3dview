@@ -201,49 +201,21 @@ const Marker = ({ position, content, ...props }: IMarkerProps) => {
     useEffect(() => {
         const pos = line.current.getAttribute('position')
         const pa = pos.array as number[]
+
+        const d = position.distanceTo(camera.position);
+        const distScales =[0.3, 0.1, 0.05]
+        let newPos = position.clone();
+        for(let i = 0; i < distScales.length; i++){
+            const distScale = distScales[i];
+            newPos = position.clone();
+            newPos.z = newPos.z + d*distScale;
+            const screenPos = newPos.clone().project(camera);
+            if(screenPos.y < 0.9){
+                break;
+            }
+        }
         
-        const screenTarget = 0.7;
-        const t1 = 0;
-        const t2 = 0.5;
-        const t3 = 1;
-        const p1w = position.clone();
-        const p2w = p1w.clone().add(new Vector3(0,0,t2));
-        const p3w = p1w.clone().add(new Vector3(0,0,t3));
-
-        const p1c = p1w.clone().project(camera);
-        const p2c = p2w.clone().project(camera);
-        const p3c = p3w.clone().project(camera);
-        camera.getWorldPosition
-
-        const p1y = p1c.y;
-        const p2y = p2c.y;
-        const p3y = p3c.y;
-
-        // // t is length along line in world space (z coordinate along stick)
-        // // t1,t2,t3 are t values giving screen y values p1y, p2y, p3y.
-        // const t =-((((p3y-p2y)*t2+(p1y-p3y)*t1)*t3+(p2y-p1y)*t1*t2)*screenTarget+((p1y*p2y-p1y*p3y)*t2+(p2y*p3y-p1y*p2y)*t1)*t3+
-        // (p1y-p2y)*p3y*t1*t2)/(((p2y-p1y)*t3+(p1y-p3y)*t2+(p3y-p2y)*t1)*screenTarget+(p1y-p2y)*p3y*t3+(p2y*p3y-p1y*p2y)*t2+
-        // (p1y*p2y-p1y*p3y)*t1)
-
-        // @ts-ignore
-        const projT = (target, x1,x2,x3) => {return -((((x3-x2)*t2+(x1-x3)*t1)*t3+(x2-x1)*t1*t2)*target+((x1*x2-x1*x3)*t2+(x2*x3-x1*x2)*t1)*t3+
-            (x1-x2)*x3*t1*t2)/(((x2-x1)*t3+(x1-x3)*t2+(x3-x2)*t1)*target+(x1-x2)*x3*t3+(x2*x3-x1*x2)*t2+
-            (x1*x2-x1*x3)*t1)}
-
-        const ty = projT(screenTarget,p1c.y,p2c.y,p3c.y);
-        const txmin = projT(-1,p1c.x,p2c.x,p3c.x);
-        const txmax = projT(1,p1c.x,p2c.x,p3c.x);
-
-        console.log(ty);
-        console.log(txmin)
-        console.log(txmax)
-
-        const tx = Math.max(txmax,txmin);
-        const t = Math.min(ty, tx);
-        console.log(t);
-
-        const z = position.z + Math.max(t,0);
-        setTextPos(new Vector3(position.x, position.y, z))
+        setTextPos(newPos)
 
         pa[0] = position.x
         pa[3] = position.x
@@ -252,7 +224,7 @@ const Marker = ({ position, content, ...props }: IMarkerProps) => {
         pa[4] = position.y
 
         pa[2] = position.z
-        pa[5] = z
+        pa[5] = newPos.z
         pos.needsUpdate = true
     }, [position])
 
