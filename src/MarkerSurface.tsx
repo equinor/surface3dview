@@ -19,6 +19,7 @@ interface IProps {
     continousContent?: JSX.Element
 
     showMarkerHitbox?: boolean
+    markerStyle?:{ background: React.CSSProperties['color'] }
 }
 
 /**
@@ -174,8 +175,9 @@ const MarkerSurface = ({ depth, scale, position, ...props }: IProps) => {
                     side={DoubleSide}
                 />
             </mesh>
-            <Marker content={continousContent} position={continousMarkerPos} visible={useContinousMarker && renderContinousMarker} />
+            <Marker content={continousContent} position={continousMarkerPos} visible={useContinousMarker && renderContinousMarker} markerStyle={props.markerStyle} />
             <Marker
+                markerStyle={props.markerStyle}
                 content={clickContent}
                 position={clickMarkerPos}
                 visible={useClickMarker && renderClickMarker}
@@ -191,6 +193,7 @@ interface IMarkerProps {
 
     onCloseMarkerClick?: React.MouseEventHandler<SVGSVGElement>
     visible?: boolean
+    markerStyle?:{ background: React.CSSProperties['color'] }
 }
 
 const Marker = ({ position, content, ...props }: IMarkerProps) => {
@@ -252,6 +255,7 @@ interface IBillboard {
 
     visible?: boolean
     onCloseButtonClick?: React.MouseEventHandler<SVGSVGElement>
+    markerStyle?:{ background: React.CSSProperties['color'] }
 }
 
 const Billboard = ({ position, content, ...props }: IBillboard) => {
@@ -263,7 +267,7 @@ const Billboard = ({ position, content, ...props }: IBillboard) => {
         <Html position={position} center>
             <div
                 style={{
-                    background: 'white',
+                    background: props.markerStyle?.background,
                     display: 'grid',
                     gridTemplateColumns: '10px auto 13px',
                     gridTemplateRows: '13px auto 10px',

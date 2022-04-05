@@ -125,6 +125,7 @@ const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarke
                 continousContent={contContent}
                 onClickPositionChanged={setClickPos}
                 onContinousPositionChanged={setContPos}
+                markerStyle={{background:'blue'}}
             />
         </Suspense>
     )
