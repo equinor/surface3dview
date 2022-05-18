@@ -2711,6 +2711,14 @@ builtin-modules@^3.1.0:
   resolved "https://npm.equinor.com/builtin-modules/-/builtin-modules-3.2.0.tgz#45d5db99e7ee5e6bc4f362e008bf917ab5049887"
   integrity sha512-lGzLKcioL90C7wMczpkY0n/oART3MbBa8R9OFGE1rJxoVI86u4WAGfEk8Wjv10eKSyTHVGkSo3bvBylCEtk7LA==
 
+bump-file@^2.0.0:
+  version "2.0.0"
+  resolved "https://npm.equinor.com/bump-file/-/bump-file-2.0.0.tgz#171475dc8a4ab0bd8ce8469860337446eb886fb5"
+  integrity sha512-Kt2FoAljRS630vFx+asbCBiCp1PqaJ2PuCby+P+Fl8LMsUnGaxw/C2YxxQe4SiCJBs3Zt8A28u3wQRwnYMtuUw==
+  dependencies:
+    detect-indent "5.0.0"
+    semver "5.4.1"
+
 bytes@3.0.0:
   version "3.0.0"
   resolved "https://npm.equinor.com/bytes/-/bytes-3.0.0.tgz#d32815404d689699f85a4ea4fa8755dd13a96048"
@@ -3502,6 +3510,11 @@ destroy@~1.0.4:
   version "1.0.4"
   resolved "https://npm.equinor.com/destroy/-/destroy-1.0.4.tgz#978857442c44749e4206613e37946205826abd80"
   integrity sha1-l4hXRCxEdJ5CBmE+N5RiBYJqvYA=
+
+detect-indent@5.0.0:
+  version "5.0.0"
+  resolved "https://npm.equinor.com/detect-indent/-/detect-indent-5.0.0.tgz#3871cc0a6a002e8c3e5b3cf7f336264675f06b9d"
+  integrity sha1-OHHMCmoALow+Wzz38zYmRnXwa50=
 
 detect-newline@^3.0.0:
   version "3.1.0"
@@ -8130,6 +8143,11 @@ selfsigned@^1.10.11:
   version "5.7.1"
   resolved "https://npm.equinor.com/semver/-/semver-5.7.1.tgz#a954f931aeba508d307bbf069eff0c01c96116f7"
   integrity sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==
+
+semver@5.4.1:
+  version "5.4.1"
+  resolved "https://npm.equinor.com/semver/-/semver-5.4.1.tgz#e059c09d8571f0540823733433505d3a2f00b18e"
+  integrity sha512-WfG/X9+oATh81XtllIo/I8gOiY9EXRdv1cQdyykeXK17YcUW3EXUAi2To4pcH6nZtJPr7ZOpM5OMyWJZm+8Rsg==
 
 semver@7.0.0:
   version "7.0.0"

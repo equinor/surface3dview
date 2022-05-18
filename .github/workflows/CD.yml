@@ -4,32 +4,44 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Bump Version'
+        required: true
+        default: 'patch' 
+        type: choice
+        options:
+        - major 
+        - minor
+        - patch
 
 permissions:
       id-token: write
-      contents: read
-      
+      contents: write
+
 jobs:
   build:
-
     runs-on: ubuntu-latest
+
+    env:
+      CI: False
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Node.js ${{ matrix.node-version }}
+    - name: Set up Node.js 14.x
       uses: actions/setup-node@v1
       with:
         node-version: 14.x
-        
+
     - name: Azure key vault login
       uses: Azure/login@v1
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          
+
     - name: Fetch secrets from key vault
       uses: Azure/get-keyvault-secrets@v1
       with:
@@ -43,8 +55,24 @@ jobs:
         echo //npm.equinor.com/:_authToken=${{ steps.fetchSecrets.outputs.NPM-TOKEN }} >> $HOME/.npmrc
         yarn config set registry https://npm.equinor.com
 
+    - uses: actions/cache@v2
+      with:
+        path: '**/node_modules'
+        key: ${{ runner.os }}-modules-14.x-${{ hashFiles('**/yarn.lock') }}
+
     - name: Install dependencies
       run: yarn
+
+    - name: Bump Version
+      run: yarn run bump package.json ${{ github.event.inputs.bump }} 
+
+    - name: Commit Version
+      run: |
+        git config --global user.name '[bot]'
+        git config --global user.email 'bot@users.noreply.github.com'
+        git add package.json
+        git commit -m "auto version"
+        git push
 
     - name: Publish
       run: | 
