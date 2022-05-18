@@ -67,7 +67,7 @@ const MarkerSurface = ({ depth, scale, position, ...props }: IProps) => {
         const m = image.height
 
         let x = image.width
-        let y = image.height
+        let y = image.height 
         if (x * y > t) {
             const r = n / m
             y = Math.floor(Math.sqrt(t / r))
@@ -79,9 +79,10 @@ const MarkerSurface = ({ depth, scale, position, ...props }: IProps) => {
         const pa = pos.array as number[]
 
         for (let j = 0; j < y; j++) {
+            let jm = flipY? j:y-j-1
             for (let i = 0; i < x; i++) {
                 const di = Math.floor((i * (n - 1)) / (x - 1))
-                const dj = Math.floor((j * (m - 1)) / (y - 1))
+                const dj = Math.floor((jm * (m - 1)) / (y - 1))
                 const didx = dj * n + di
 
                 let d = image.data[4 * didx + 1]

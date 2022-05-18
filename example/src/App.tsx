@@ -72,19 +72,22 @@ const SurfaceContainerReactUpdate = ({ scale, ticks, domains, marker, clickMarke
             for (let i = 0; i < n; i++) {
                 for (let j = 0; j < m; j++) {
                     const idx = i * m + j
-                    img.data[4 * idx] = 100
-                    img.data[4 * idx + 1] = 100
-                    img.data[4 * idx + 2] = 100
+                    const c = 255*(i + j)/(n-1+m-1)
+                    img.data[4 * idx] = c
+                    img.data[4 * idx + 1] = c
+                    img.data[4 * idx + 2] = c
                     img.data[4 * idx + 3] = 255
                 }
             }
 
             depth1 = new DataTexture()
             depth1.image = img
+            depth1.flipY = true;
             depth1.needsUpdate = true
 
             map1 = new DataTexture()
             map1.image = img
+            map1.flipY = true;
             map1.needsUpdate = true
         }
 
