@@ -8,7 +8,7 @@ interface IProps {
     depth: DataTexture | Texture
     scale: Vector3
 
-    position?:Vector3
+    position?: Vector3
 
     clickMarker?: boolean
     onClickPositionChanged?: (v: Vector3) => void
@@ -19,7 +19,7 @@ interface IProps {
     continousContent?: JSX.Element
 
     showMarkerHitbox?: boolean
-    markerStyle?:{ background: React.CSSProperties['color'] }
+    markerStyle?: { background: React.CSSProperties['color'] }
 }
 
 /**
@@ -67,7 +67,7 @@ const MarkerSurface = ({ depth, scale, position, ...props }: IProps) => {
         const m = image.height
 
         let x = image.width
-        let y = image.height 
+        let y = image.height
         if (x * y > t) {
             const r = n / m
             y = Math.floor(Math.sqrt(t / r))
@@ -79,7 +79,7 @@ const MarkerSurface = ({ depth, scale, position, ...props }: IProps) => {
         const pa = pos.array as number[]
 
         for (let j = 0; j < y; j++) {
-            let jm = flipY? j:y-j-1
+            const jm = flipY ? j : y - j - 1
             for (let i = 0; i < x; i++) {
                 const di = Math.floor((i * (n - 1)) / (x - 1))
                 const dj = Math.floor((jm * (m - 1)) / (y - 1))
@@ -155,8 +155,8 @@ const MarkerSurface = ({ depth, scale, position, ...props }: IProps) => {
     const continousContent = props.continousContent ? props.continousContent : <></>
     const clickContent = props.clickContent ? props.clickContent : <></>
 
-    const p = position ? position : new Vector3(0.5*scale.x,0.5*scale.y, 0);
-    
+    const p = position ? position : new Vector3(0.5 * scale.x, 0.5 * scale.y, 0)
+
     return (
         <Suspense fallback={null}>
             <mesh
@@ -176,7 +176,12 @@ const MarkerSurface = ({ depth, scale, position, ...props }: IProps) => {
                     side={DoubleSide}
                 />
             </mesh>
-            <Marker content={continousContent} position={continousMarkerPos} visible={useContinousMarker && renderContinousMarker} markerStyle={props.markerStyle} />
+            <Marker
+                content={continousContent}
+                position={continousMarkerPos}
+                visible={useContinousMarker && renderContinousMarker}
+                markerStyle={props.markerStyle}
+            />
             <Marker
                 markerStyle={props.markerStyle}
                 content={clickContent}
@@ -194,31 +199,31 @@ interface IMarkerProps {
 
     onCloseMarkerClick?: React.MouseEventHandler<SVGSVGElement>
     visible?: boolean
-    markerStyle?:{ background: React.CSSProperties['color'] }
+    markerStyle?: { background: React.CSSProperties['color'] }
 }
 
 const Marker = ({ position, content, ...props }: IMarkerProps) => {
     const [textPos, setTextPos] = useState(position)
-    const {camera} = useThree();
+    const { camera } = useThree()
     const line = useRef(new BufferGeometry().setFromPoints([position, position]))
 
     useEffect(() => {
         const pos = line.current.getAttribute('position')
         const pa = pos.array as number[]
 
-        const d = position.distanceTo(camera.position);
-        const distScales =[0.3, 0.1, 0.05]
-        let newPos = position.clone();
-        for(let i = 0; i < distScales.length; i++){
-            const distScale = distScales[i];
-            newPos = position.clone();
-            newPos.z = newPos.z + d*distScale;
-            const screenPos = newPos.clone().project(camera);
-            if(screenPos.y < 0.9){
-                break;
+        const d = position.distanceTo(camera.position)
+        const distScales = [0.3, 0.1, 0.05]
+        let newPos = position.clone()
+        for (let i = 0; i < distScales.length; i++) {
+            const distScale = distScales[i]
+            newPos = position.clone()
+            newPos.z = newPos.z + d * distScale
+            const screenPos = newPos.clone().project(camera)
+            if (screenPos.y < 0.9) {
+                break
             }
         }
-        
+
         setTextPos(newPos)
 
         pa[0] = position.x
@@ -256,7 +261,7 @@ interface IBillboard {
 
     visible?: boolean
     onCloseButtonClick?: React.MouseEventHandler<SVGSVGElement>
-    markerStyle?:{ background: React.CSSProperties['color'] }
+    markerStyle?: { background: React.CSSProperties['color'] }
 }
 
 const Billboard = ({ position, content, ...props }: IBillboard) => {
